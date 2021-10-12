@@ -1,0 +1,164 @@
+<div class="shr-settings">
+  <h2 class="title">{{'SETTINGS.TITLE' | literal: lan}}</h2>
+  <div *ngIf="isAdmin" class="wrapper installation">
+    <button pButton class="p-button-outlined installation-button" (click)="showScripts()"
+      label="{{'SETTINGS.PROFILE.COPY_SCRIPTS' | literal: lan}}" [disabled]="!isAdmin"></button>
+    <button pButton class="p-button-outlined iframe-installation-button" (click)="showIframeScript()"
+      label="{{'SETTINGS.COPY_IFRAME_SCRIPTS' | literal: lan}}" [disabled]="!isAdmin"></button>
+  </div>
+  <div *ngIf="isAdmin" class="wrapper global-settings">
+    <div class="description">{{'SETTINGS.HELP_BUTTON_DESCRIPTION' | literal: lan}}</div>
+    <div class="label">
+      {{'SETTINGS.DISPLAY_HELP_BUTTON' | literal: lan}}
+      <span class="help-icon pointer pi pi-question" (click)="showWidgetExample()"></span>
+      <div class="switch-container" *ngIf="entity">
+        <p-inputSwitch [(ngModel)]="entity.isWidgetEnabled" (onChange)="onWidgetAvailabilityChange()"
+          [disabled]="!isAdmin"></p-inputSwitch>
+      </div>
+    </div>
+  </div>
+  <div class="wrapper user-info">
+    <h3 class="bold">{{'SETTINGS.PROFILE.USER_DATA' | literal: lan}}</h3>
+    <div class="description">{{'SETTINGS.PROFILE.USER_DATA_DESCRIPTION' | literal: lan}}</div>
+    <div *ngIf="user">
+      <form>
+        <div class="info">
+          <div class="bold label">{{'COMMON.NAME' | literal: lan}}: </div>
+          <input pInputText [(ngModel)]="name" name="name" (change)="checkEdition()" data-hj-allow>
+        </div>
+        <div class="info">
+          <div class="bold label">{{'COMMON.LAST_NAME' | literal: lan}}: </div>
+          <input pInputText [(ngModel)]="lastName" name="lastName" (change)="checkEdition()" data-hj-allow>
+        </div>
+        <div class="info">
+          <div class="bold label">{{'COMMON.EMAIL' | literal: lan}}: </div>
+          <input pInputText [(ngModel)]="email" name="email" (change)="checkEdition()" data-hj-allow>
+        </div>
+        <div class="info">
+          <div class="bold label">{{'SETTINGS.PROFILE.AVATAR' | literal: lan}}: </div>
+          <p-fileUpload mode="basic" name="avatarUrl" url="{{fileUploadUrl + '/' + entity.code}}" accept="image/*"
+            [maxFileSize]="1000000" chooseLabel="{{'SETTINGS.PROFILE.UPLOAD_LOGO' | literal: lan}}" [auto]="true"
+            (onUpload)="onUserLogoUpload($event)">
+          </p-fileUpload>
+          <img *ngIf="avatarUrl" [src]="avatarUrl">
+        </div>
+        <div *ngIf="!displayPassword" class="info">
+          <div class="change-password-test pointer" (click)="showPassword()">
+            {{'SETTINGS.PROFILE.CHANGE_PASSWORD' | literal: lan}}
+          </div>
+        </div>
+        <div *ngIf="displayPassword" class="info">
+          <div class="bold label">{{'SETTINGS.PROFILE.CURRENT_PASSWORD' | literal: lan}}: </div>
+          <input pInputText type="password" [(ngModel)]="password" name="password" readonly
+            (focus)="allowEdition($event)">
+        </div>
+        <div *ngIf="displayPassword" class="info">
+          <div class="bold label">{{'SETTINGS.PROFILE.NEW_PASSWORD' | literal: lan}}: </div>
+          <input pInputText type="password" [(ngModel)]="newPassword" name="newPassword" (change)="checkEdition()"
+            readonly (focus)="allowEdition($event)">
+        </div>
+      </form>
+      <div class="button-content">
+        <button pButton (click)="updateSelf()" label="{{'COMMON.UPDATE' | literal: lan}}"></button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="isAdmin" class="wrapper entity-info">
+    <h3 class="bold">{{'SETTINGS.PROFILE.COMPANY_DATA' | literal: lan}}</h3>
+    <div *ngIf="entity">
+      <div class="info">
+        <div class="bold label">{{'SETTINGS.PROFILE.COMPANY_NAME' | literal: lan}}: </div>
+        <input pInputText [disabled]="!isAdmin" [(ngModel)]="companyName" (change)="checkEdition()" data-hj-allow>
+      </div>
+      <div class="info">
+        <div class="bold label">{{'SETTINGS.PROFILE.COMPANY_SITE' | literal: lan}}: </div>
+        <input pInputText class="company-site-input" [disabled]="!isAdmin" [(ngModel)]="companySite"
+          (change)="checkEdition()" data-hj-allow>
+      </div>
+      <div class="info">
+        <div class="bold label">{{'SETTINGS.PROFILE.COMPANY_PHONE' | literal: lan}}: </div>
+        <input pInputText [disabled]="!isAdmin" [(ngModel)]="companyPhone" (change)="checkEdition()" data-hj-allow>
+      </div>
+      <div class="info">
+        <div class="bold label">{{'SETTINGS.PROFILE.COMPANY_EMAIL' | literal: lan}}: </div>
+        <input pInputText [disabled]="!isAdmin" [(ngModel)]="companyEmail" (change)="checkEdition()" data-hj-allow>
+      </div>
+      <div *ngIf="isAdmin" class="button-content">
+        <button pButton [disabled]="!isAdmin" (click)="updateEntity()"
+          label="{{'COMMON.UPDATE' | literal: lan}}"></button>
+      </div>
+    </div>
+  </div>
+  <p-dialog [baseZIndex]="10001" header="{{'SETTINGS.WIDGET_EXAMPLE_TITLE' | literal: lan}}"
+    [(visible)]="displayWidgetExample" [modal]="true" [dismissableMask]="true" [draggable]="false" [resizable]="false"
+    [blockScroll]="true" styleClass="example-dialog">
+    <img src="../../../../assets/images/widget-example-{{lan}}.png">
+    <p-footer></p-footer>
+  </p-dialog>
+  <p-dialog [baseZIndex]="10001" header="{{'SETTINGS.INSTALLATION_SCRIPT_TITLE' | literal: lan}}"
+    [(visible)]="displayScripts" [modal]="true" [dismissableMask]="true" [draggable]="false" [resizable]="false"
+    [blockScroll]="true" styleClass="scripts-dialog">
+    <div class="description">{{'SETTINGS.INSTALLATION_SCRIPT_DESCRIPTION' | literal: lan}}</div>
+    <p-tabView (onChange)="onTabChange($event)">
+      <p-tabPanel header="{{'SETTINGS.SCRIPT_EASY' | literal: lan}}">
+        <div class="description">{{'SETTINGS.EASY_MODE_DESCRIPTION_1' | literal: lan}}</div>
+        <div class="code">
+          <code *ngIf="entity">
+            <div>{{cobrowsingScript}}</div>
+          </code>
+          <button pButton icon="pi pi-copy" (click)="copyScript()"></button>
+        </div>
+        <div class="description">
+          {{'SETTINGS.EASY_MODE_DESCRIPTION_2' | literal: lan}}
+          <a class="bold" [href]="identifyUsersDocUrl" target="_blank">
+            {{'SETTINGS.EASY_MODE_DESCRIPTION_3' | literal: lan}}
+          </a>
+        </div>
+      </p-tabPanel>
+      <p-tabPanel header="{{'SETTINGS.SCRIPT_GTM' | literal: lan}}">
+        <div class="description">{{'SETTINGS.GTM_DESCRIPTION_1' | literal: lan}}</div>
+        <div class="code">
+          <code *ngIf="entity">
+            <div>{{cobrowsingScript}}</div>
+          </code>
+          <button pButton icon="pi pi-copy" (click)="copyScript()"></button>
+        </div>
+        <div class="description bold">{{'SETTINGS.GTM_DESCRIPTION_2' | literal: lan}}</div>
+        <div class="description indent">{{'SETTINGS.GTM_DESCRIPTION_3' | literal: lan}}</div>
+        <div class="description indent">{{'SETTINGS.GTM_DESCRIPTION_4' | literal: lan}}</div>
+        <div class="description indent">{{'SETTINGS.GTM_DESCRIPTION_5' | literal: lan}}</div>
+        <div class="description indent">{{'SETTINGS.GTM_DESCRIPTION_6' | literal: lan}}</div>
+        <div class="description indent">{{'SETTINGS.GTM_DESCRIPTION_7' | literal: lan}}</div>
+        <div class="description indent">{{'SETTINGS.GTM_DESCRIPTION_8' | literal: lan}}</div>
+      </p-tabPanel>
+      <p-tabPanel header="{{'SETTINGS.SCRIPT_WP' | literal: lan}}">
+        <div class="description">{{'SETTINGS.WP_DESCRIPTION_1' | literal: lan}}</div>
+        <div class="description">
+          {{'SETTINGS.WP_DESCRIPTION_2' | literal: lan}}
+          <a href="https://es.wordpress.org/plugins/header-and-footer-scripts-inserter/" target="_blank"
+            class="bold">{{'SETTINGS.WP_PLUGIN' | literal: lan}}</a>
+        </div>
+        <div class="description">{{'SETTINGS.WP_DESCRIPTION_3' | literal: lan}}</div>
+        <div class="code">
+          <code *ngIf="entity">
+            <div>{{cobrowsingScript}}</div>
+          </code>
+          <button pButton icon="pi pi-copy" (click)="copyScript()"></button>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+    <p-footer></p-footer>
+  </p-dialog>
+  <p-dialog [baseZIndex]="10001" header="{{'SETTINGS.SCRIPTS_TITLE_IFRAME' | literal: lan}}"
+    [(visible)]="displayIframeScript" [modal]="true" [dismissableMask]="true" [draggable]="false" [resizable]="false"
+    [blockScroll]="true" styleClass="script-iframe-dialog">
+    <div class="description">{{'SETTINGS.IFRAME_DESCRIPTION' | literal: lan}}</div>
+    <div class="code">
+      <code *ngIf="entity">
+        <div>{{cobrowsingScript}}</div>
+      </code>
+      <button pButton icon="pi pi-copy" (click)="copyIframeScript()"></button>
+    </div>
+    <p-footer></p-footer>
+  </p-dialog>
+</div>

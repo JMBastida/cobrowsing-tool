@@ -1,0 +1,12 @@
+//IE8 and below
+
+@function calculateRem($size) {
+  $remSize: $size / $fs-base;
+
+  @return $remSize * 1rem;
+}
+
+@mixin font-size($size) {
+  font-size: $size;
+  font-size: calculateRem($size);
+}

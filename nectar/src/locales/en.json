@@ -1,0 +1,119 @@
+{
+  "AUTH": {
+    "ERROR": {
+      "SIGNUP": {
+        "SUMMARY": "Error in user registration",
+        "EMPTY_USER": "Check that the fields are filled in",
+        "EMAIL": "You must enter an e-mail",
+        "EXISTING_EMAIL": "This email already exists",
+        "PASSWORD": "You must enter a password",
+        "NAME": "You must enter a company name",
+        "USER_NOT_CREATED": "Registration could not be completed. Please try again."
+      },
+      "LOGIN": {
+        "SUMMARY": "Error while logging in",
+        "EMPTY_USER": "Check that the fields are filled in",
+        "EMAIL": "You must enter an email",
+        "PASSWORD": "You must enter a password",
+        "ENTITY": "Entity not found",
+        "USER_NOT_FOUND": "This user does not exist",
+        "INVALID_PASSWORD": "The password is not correct."
+      },
+      "EMAIL": {
+        "SUMMARY": "Incorrect email",
+        "INVALID_COMPANY_EMAIL": "Enter a valid corporate email."
+      }
+    }
+  },
+  "SHARED": {
+    "MW": {
+      "ERROR": {
+        "SUMMARY": "Login Error",
+        "DETAIL": "Gandalf says: - You Shall Not Pass!"
+      }
+    }
+  },
+  "ENTITY": {
+    "ERROR": {
+      "INSERT": {
+        "REQUIRED": {
+          "SUMMARY": "Check required fields",
+          "DETAIL": "You must fill in all fields."
+        },
+        "EXISTING": {
+          "EMAIL_SUMMARY": "Email in use",
+          "EMAIL_DETAIL": "This email is already registered",
+          "COMPANY_SUMMARY": "Company registered",
+          "COMPANY_DETAIL": "This company is already registered."
+        }
+      },
+      "UPDATE": {
+        "REQUIRED": {
+          "SUMMARY": "Required fields are missing",
+          "DETAIL": "Entity identifier must be reported."
+        },
+        "EXISTING": {
+          "SUMMARY": "Error while updating",
+          "DETAIL": "No information exists for this entity."
+        },
+        "INVLAID": {
+          "CODE": {
+            "SUMMARY": "Error while updating",
+            "DETAIL": "This code is invalid."
+          },
+          "EMAIL": {
+            "SUMMARY": "Error while updating",
+            "DETAIL": "This email is invalid"
+          }
+        }
+      }
+    }
+  },
+  "USER": {
+    "ERROR": {
+      "INSERT": {
+        "REQUIRED": {
+          "SUMMARY": "Check the required fields",
+          "DETAIL": "You must fill in all fields."
+        },
+        "EXISTING": {
+          "SUMMARY": "Email in use",
+          "DETAIL": "This email is already registered."
+        },
+        "LIMIT": {
+          "SUMMARY": "User limit reached",
+          "DETAIL": "Contact us to expand the number of users."
+        }
+      },
+      "UPDATE": {
+        "PASSWORD": {
+          "SUMMARY": "Error while updating",
+          "DETAIL": "Incorrect password"
+        },
+        "PERMISSION": {
+          "SUMMARY": "Error while updating",
+          "DETAIL": "You do not have permission to edit this user."
+        },
+        "NOT_FOUND": {
+          "SUMMARY": "Error while updating",
+          "DETAIL": "User not found"
+        }
+      }
+    }
+  },
+  "TICKET": {
+    "ERROR": {
+      "UPDATE": {
+        "REQUIRED": {
+          "SUMMARY": "Check required fields",
+          "DETAIL": "You must fill in all fields."
+        },
+        "EXISTING": {
+          "SUMMARY": "Information found",
+          "DETAIL": "This ticket already exists."
+        }
+      }
+    }
+  },
+  "WRONG_PATTERN": "Message not found."
+}

@@ -1,0 +1,121 @@
+@use 'variables' as var;
+
+@import "./components.scss";
+@import "./custom-primeng.scss";
+@import "./animations.scss";
+
+@font-face {
+  font-family: "Inter Regular";
+  src: url(../assets/fonts/inter/Inter-Regular.ttf) format("opentype");
+}
+
+@font-face {
+  font-family: "Inter Light";
+  src: url(../assets/fonts/inter/Inter-Light.ttf) format("opentype");
+}
+
+@font-face {
+  font-family: "Inter SemiBold";
+  src: url(../assets/fonts/inter/Inter-SemiBold.ttf) format("opentype");
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  font-family: "Inter Regular";
+
+  @media screen and (max-width: 768px) {
+    background-color: var.$color-background-a;
+  }
+}
+
+.light {
+  font-family: "Inter Light" !important;
+}
+
+.bold {
+  font-family: "Inter SemiBold" !important;
+}
+
+.primary-color {
+  fill: var.$primary-color;
+  color: var.$primary-color;
+}
+
+.secondary-color {
+  fill: var.$secondary-color;
+  color: var.$secondary-color;
+}
+
+.green {
+  fill: var.$color-green;
+  color: var.$color-green;
+}
+
+.red {
+  fill: var.$color-red;
+  color: var.$color-red;
+}
+
+.blue {
+  fill: var.$color-blue;
+  color: var.$color-blue;
+}
+
+.black {
+  fill: var.$color-black;
+  color: var.$color-black;
+}
+
+.white {
+  fill: var.$color-white;
+  color: var.$color-white;
+}
+
+.pointer {
+  cursor: pointer !important;
+}
+
+.pointer-forbidden {
+  cursor: not-allowed;
+}
+
+.underline {
+  text-decoration: underline !important;
+}
+
+.italic {
+  font-style: italic !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.filter-white {
+  filter: invert(99%) sepia(1%) saturate(0%) hue-rotate(257deg) brightness(111%) contrast(100%);
+
+  span {
+      color: var.$color-black !important;
+  }
+}
+
+.text-small {
+  font-size: x-small;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.visible{
+  visibility: visible;
+}
+
+.invisible{
+  visibility: hidden;
+}
+
+.display-none {
+  display: none;
+}

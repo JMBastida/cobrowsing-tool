@@ -1,0 +1,79 @@
+@use "variables" as var;
+
+.shr-sessions-tabs-view {
+  z-index: 1;
+  padding-top: 0.5rem;
+  border: 1px solid rgba(4, 39, 45, 0.1);
+  background: var.$secondary-light-color;
+  position: relative;
+  border-radius: 6px 6px 0 0;
+
+  .tabs {
+    height: 45px;
+    padding: 0 10px;
+    overflow: scroll;
+
+    .tab {
+      width: 130px;
+      height: 45px;
+      overflow: hidden;
+      float: left;
+      margin: 0 -15px 0 0;
+
+      .tab-box {
+        cursor: pointer;
+        height: 50px;
+        background: var.$color-white;
+        border-radius: 10px 10px 0 0;
+        border: 1px solid #ccc;
+        margin: 0 10px 0;
+        padding: 0 5px;
+        display: flex;
+        flex-flow: nowrap row;
+        align-content: space-around;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        /*transform: perspective(100px) rotateX(30deg);
+
+        -webkit-transform: perspective(100px) rotateX(30deg);
+        -moz-transform: perspective(100px) rotateX(30deg);*/
+
+        &:hover{
+          box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5) inset;
+        }
+
+        span {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      &.active {
+        z-index: 2;
+        position: relative;
+        padding-bottom: 1px;
+      }
+
+      &.selected {
+        z-index: 3;
+        position: relative;
+        padding-bottom: 1px;
+        color: var.$color-white;
+      }
+
+      &.active .tab-box {
+        background-color: var.$primary-third-color;
+        .url {
+          color: var.$primary-third-color;
+        }
+      }
+
+      &.selected .tab-box {
+        background-color: var.$secondary-color;
+        cursor: not-allowed;
+      }
+    }
+  }
+}

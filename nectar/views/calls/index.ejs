@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Sideby | Calls</title>
+  <link rel="icon" type="image/x-icon" href="https://app.sideby.io/favicon.ico">
+  <script async src='https://download.agora.io/sdk/release/AgoraRTC_N-4.6.2.js'></script>
+  <script src="https://cdn.socket.io/3.1.3/socket.io.min.js"
+    integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh"
+    crossorigin="anonymous"></script>
+  <style>
+    body {
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #CBFFE2;
+      font-family: Helvetica, sans-serif;
+    }
+
+    body .content {}
+
+    body .content .top {
+      padding: 24px;
+      text-align: center;
+    }
+
+    body .content .top svg {
+      width: 120px;
+      height: auto;
+    }
+
+    body .content .main {}
+
+    body .content .main .users {}
+
+    body .content .main .users .user {
+      display: flex;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    body .content .main .users .user .img {
+      width: 35px;
+      height: 35px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-right: 24px;
+      background-size: cover;
+      border: 2px solid #00CD8E;
+      background-color: #FFFFFF;
+      background-repeat: no-repeat;
+    }
+
+    body .content .main .users .user .img.mute {
+      border-color: #D32F2F;
+    }
+
+    body .content .main .users .user .svg {
+      margin-left: 12px;
+    }
+
+    body .content .main .users .user .svg.hide {
+      display: none;
+    }
+
+    body .content .main .users .user .name {
+      font-size: 1rem;
+    }
+
+    body .content .main .settings {
+      margin-bottom: 36px;
+    }
+
+    body .content .main .settings .setting {
+      display: flex;
+      margin-bottom: 12px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body .content .main .settings .label {
+      width: 100px;
+    }
+
+    body .content .main .settings .selector {
+      width: 180px;
+    }
+
+    body .content .main .buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body .content .main .buttons .button {
+      width: 50px;
+      height: 50px;
+      border: none;
+      line-height: 0;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    body .content .main .buttons .button:hover {
+      opacity: 0.8;
+    }
+
+    body .content .main .buttons .hide {
+      display: none;
+    }
+
+    body .content .main .buttons .end-call-button {
+      margin-right: 42px;
+      background-color: #D32F2F;
+    }
+
+    body .content .main .buttons .mute {
+      background-color: #CCCCCC;
+    }
+
+    body .content .main .buttons .unmute {
+      background-color: #D32F2F;
+    }
+  </style>
+  <script>
+    var API_BASE_URL = '<%= API_BASE_URL %>';
+    var AGORA_APP_ID = '<%= AGORA_APP_ID %>';
+    var DEFAULT_USER_IMG = '<%= DEFAULT_USER_IMG %>';
+    var socket;
+    var client;
+    var codec = 'vp8';
+    var localAudioTrack;
+    var audioInputDeviceId = 'default';
+    var audioOutputDeviceId = 'default';
+
+    var urlSearchParams = new URLSearchParams(window.location.search);
+    var params = Object.fromEntries(urlSearchParams.entries());
+    var { channel, uid } = params;
+
+    function sanitizeUrl(url) {
+      if (!url) return ''.replace;
+      var urlSanitized = url.replace('http://', '').replace('https://', '').replace('www.', '');
+      if (urlSanitized.substr(-1) === '/') urlSanitized = urlSanitized.substr(0, urlSanitized.length - 1);
+      urlSanitized = urlSanitized.replace(/=/g, '{equals}');
+      urlSanitized = urlSanitized.replace(/&/g, '{ampersand}');
+      return urlSanitized;
+    }
+
+    function addSelf(userData) {
+      var userParsed = userData;
+      userParsed.id = `user-${uid}`;
+      if (!userParsed.name) userParsed.name = 'You';
+      addUser(userData);
+    }
+
+    function addUser(userData) {
+      const useresContent = document.getElementById('users');
+      if (!useresContent) return;
+      var { id, name, avatarUrl } = userData;
+      var userExists = document.getElementById(id);
+      if (userExists) return;
+      var userDiv = document.createElement('div');
+      userDiv.id = id;
+      userDiv.classList.add('user');
+      var userImg = document.createElement('img');
+      userImg.src = avatarUrl || DEFAULT_USER_IMG;
+      userImg.classList.add('img');
+      userDiv.appendChild(userImg);
+      var nameDiv = document.createElement('div');
+      nameDiv.innerText = name;
+      nameDiv.classList.add('name');
+      userDiv.appendChild(nameDiv);
+      var microphoneDiv = document.createElement('div');
+      microphoneDiv.innerHTML = `
+        <svg class="svg hide" width="15" height="12" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M39.6137 28.6311L29.7512 21.0086C30.5381 19.508 30.9999 17.813 30.9999 15.9999V12.9999C30.9999 12.4474 30.5524 11.9999 29.9999 11.9999H28.9999C28.4474 11.9999 27.9999 12.4474 27.9999 12.9999V15.9999C27.9999 17.1199 27.7524 18.1749 27.3299 19.1374L25.6706 17.8549C25.8643 17.2674 26.0006 16.6536 26.0006 16.0005V5.99996C26.0006 2.68623 23.3143 0 20.0006 0C16.6868 0 14.0006 2.68623 14.0006 5.99996V8.83494L2.84182 0.210624C2.40557 -0.128124 1.77682 -0.0499997 1.43807 0.386247L0.21057 1.96561C-0.12818 2.40123 -0.0500554 3.02936 0.386194 3.36873L37.1587 31.7892C37.5949 32.1285 38.2231 32.0498 38.5624 31.6135L39.7899 30.0342C40.1281 29.5986 40.0499 28.9704 39.6137 28.6311ZM24.9999 28.9998H21.4999V26.8892C22.2287 26.7892 22.9281 26.6055 23.6043 26.3698L20.4724 23.9492C20.0531 23.9742 19.6343 24.0036 19.2006 23.9617C15.7099 23.6211 13.0293 20.9224 12.2518 17.5961L8.99994 15.0818V15.5099C8.99994 21.1124 12.9981 26.1067 18.4999 26.8654V28.9998H14.9999C14.4474 28.9998 13.9999 29.4473 13.9999 29.9998V30.9998C13.9999 31.5523 14.4474 31.9998 14.9999 31.9998H24.9999C25.5524 31.9998 25.9999 31.5523 25.9999 30.9998V29.9998C25.9999 29.4473 25.5524 28.9998 24.9999 28.9998Z"
+            fill="#D32F2F" />
+        </svg>
+      `;
+      userDiv.appendChild(microphoneDiv);
+      useresContent.appendChild(userDiv);
+    }
+
+    function removeUser(userData) {
+      var userId = 'user-' + userData.uid;
+      const userDiv = document.getElementById(userId);
+      if (!userDiv) return;
+      userDiv.remove();
+    }
+
+    function addInputDevice(device) {
+      var inputSelector = document.getElementById('input-selector');
+      if (!inputSelector) return;
+      var { deviceId, label } = device;
+      var options = Array.prototype.slice.call(inputSelector.childNodes);
+      var optionExists = options.some(function (o) { return o.value === deviceId });
+      if (optionExists) return;
+      var option = document.createElement('option');
+      option.value = deviceId;
+      option.innerText = label;
+      inputSelector.appendChild(option);
+    }
+
+    function onInputChange(value) {
+      var selector = document.getElementById('input-selector');
+      var options = Array.prototype.slice.call(selector.childNodes);
+      var option = options.find(function (o) { return o.value === value });
+      option.selected = 'selected';
+      localAudioTrack.setDevice(value);
+      audioInputDeviceId = value;
+    }
+
+    async function handleDevices() {
+      var devices = await AgoraRTC.getDevices();
+      var totalDevices = devices.length;
+      for (var i = 0; i < totalDevices; i += 1) {
+        var device = devices[i];
+        var { kind } = device;
+        if (kind === 'audioinput') addInputDevice(device);
+      }
+    }
+
+    function handleMuteState(userId, msg) {
+      var userDiv = document.getElementById(`user-${userId}`);
+      if (!userDiv) return;
+      var img = userDiv.querySelector('img');
+      var microphoneSvg = userDiv.querySelector('svg');
+      switch (msg) {
+        case 'mute-audio':
+          if (img) img.classList.add('mute');
+          if (microphoneSvg) microphoneSvg.classList.remove('hide');
+          break;
+        case 'unmute-audio':
+          if (img) img.classList.remove('mute');
+          if (microphoneSvg) microphoneSvg.classList.add('hide');
+          break;
+        default:
+          break;
+      }
+    }
+
+    async function connectToCall() {
+      try {
+        client = AgoraRTC.createClient({ mode: "rtc", codec });
+        await client.join(AGORA_APP_ID, channel, null, uid);
+        localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        await client.publish([localAudioTrack]);
+        handleDevices();
+        client.on("user-published", async (newUser, mediaType) => {
+          await client.subscribe(newUser, mediaType);
+          if (mediaType === "audio") {
+            var remoteAudioTrack = newUser.audioTrack;
+            remoteAudioTrack.play();
+          }
+        });
+        client.on("user-joined", (newUser) => {
+          socket.emit('call-user-data-request', { uid: newUser.uid });
+        });
+        client.on("user-left", (userLeft) => {
+          removeUser(userLeft);
+        });
+        client.on("user-info-updated", (userId, msg) => {
+          handleMuteState(userId, msg);
+        });
+        AgoraRTC.onMicrophoneChanged = async function (changedDevice) {
+          await handleDevices();
+          var { device, state } = changedDevice;
+          var { deviceId, kind } = device;
+          if (state === "ACTIVE") {
+            if (kind === 'audioinput') onInputChange(deviceId);
+          } else {
+            if (kind === 'audioinput' && deviceId !== audioInputDeviceId) onInputChange('default');
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        setTimeout(function () { connectToCall(); }, 1000);
+      }
+    }
+
+    function endCall() {
+      if (localAudioTrack) localAudioTrack.close();
+      if (client) client.leave();
+      if (socket) socket.close();
+      window.close();
+    }
+
+    function mute() {
+      var activeButton = document.getElementById('active-microphone-button');
+      var inactiveButton = document.getElementById('inactive-microphone-button');
+      activeButton.classList.add('hide');
+      inactiveButton.classList.remove('hide');
+      localAudioTrack.setEnabled(false);
+      handleMuteState(uid, 'mute-audio');
+    }
+
+    function unMute() {
+      var activeButton = document.getElementById('active-microphone-button');
+      var inactiveButton = document.getElementById('inactive-microphone-button');
+      inactiveButton.classList.add('hide');
+      activeButton.classList.remove('hide');
+      localAudioTrack.setEnabled(true);
+      handleMuteState(uid, 'unmute-audio');
+    }
+
+    function initializeSocket() {
+      if (socket) return;
+      var location = sanitizeUrl(window.location.href);
+      var options = {
+        path: '/ws/',
+        forceNew: true,
+        transports: ['websocket'],
+        query: `appId=${AGORA_APP_ID}&channel=${channel}&uid=${uid}&location=${location}&force=true`,
+      };
+      socket = io.connect(API_BASE_URL, options);
+      socket.on('connect', function () {
+        var deviceData = {
+          navigator: {
+            userAgent: navigator.userAgent,
+            vendor: navigator.vendor,
+            platform: navigator.platform,
+            appVersion: navigator.appVersion,
+          },
+          window: {
+            opera: window.opera,
+          },
+          language: navigator.language || navigator['userLanguage'],
+        };
+        socket.emit('request-device-info', deviceData);
+      });
+      socket.on('device-info-response', function (data) {
+        if (!data || !data.deviceInfo) return;
+        var { userData, deviceInfo } = data;
+        addSelf(userData);
+        if (data && data.browser === 'safari' && data.version <= 12.1) codec = 'h264';
+        connectToCall();
+      });
+      socket.on('call-user-data-response', function (data) {
+        if (!data) return;
+        addUser(data);
+      });
+      socket.on('end-call-request', function (data) {
+        endCall();
+      });
+    }
+
+    function init() {
+      try {
+        initializeSocket();
+      } catch (err) {
+        setTimeout(function () { init(); }, 1000);
+      }
+    }
+
+    init();
+  </script>
+</head>
+
+<body>
+  <div class="content">
+    <div class="top">
+      <svg width="58pt" height="12pt" viewBox="0 0 58 12">
+        <g id="surface1">
+          <path
+            style="fill:none;stroke-width:18.9265;stroke-linecap:round;stroke-linejoin:miter;stroke:rgb(1.568627%,15.294118%,17.647059%);stroke-opacity:1;stroke-miterlimit:4;"
+            d="M 13.469087 132.086263 L 124.492053 132.086263 C 146.774246 132.086263 164.788456 114.041992 164.788456 91.816732 C 164.788456 69.591471 146.774246 51.547201 124.492053 51.547201 L 54.153489 51.547201 "
+            transform="matrix(0.0704739,0,0,0.0710059,0,0)" />
+          <path
+            style="fill:none;stroke-width:18.9265;stroke-linecap:round;stroke-linejoin:miter;stroke:rgb(1.568627%,15.294118%,17.647059%);stroke-opacity:1;stroke-miterlimit:4;"
+            d="M 119.836072 91.651693 L 49.663793 91.651693 C 27.437029 91.651693 9.478246 73.662435 9.478246 51.437174 C 9.478246 29.211914 27.437029 11.222656 49.663793 11.222656 L 155.531923 11.222656 "
+            transform="matrix(0.0704739,0,0,0.0710059,0,0)" />
+          <path style=" stroke:none;fill-rule:nonzero;fill:rgb(1.568627%,15.294118%,17.647059%);fill-opacity:1;"
+            d="M 5.117188 3.597656 C 5.117188 4.324219 4.535156 4.910156 3.816406 4.910156 C 3.097656 4.910156 2.515625 4.324219 2.515625 3.597656 C 2.515625 2.875 3.097656 2.285156 3.816406 2.285156 C 4.535156 2.285156 5.117188 2.875 5.117188 3.597656 Z M 5.117188 3.597656 " />
+          <path style=" stroke:none;fill-rule:nonzero;fill:rgb(1.568627%,15.294118%,17.647059%);fill-opacity:1;"
+            d="M 9.730469 6.507812 C 9.730469 7.230469 9.148438 7.820312 8.425781 7.820312 C 7.707031 7.820312 7.125 7.230469 7.125 6.507812 C 7.125 5.78125 7.707031 5.195312 8.425781 5.195312 C 9.148438 5.195312 9.730469 5.78125 9.730469 6.507812 Z M 9.730469 6.507812 " />
+          <path style=" stroke:none;fill-rule:nonzero;fill:rgb(1.568627%,15.294118%,17.647059%);fill-opacity:1;"
+            d="M 23.082031 2.921875 L 24.644531 2.921875 C 24.617188 1.394531 23.324219 0.3125 21.414062 0.3125 C 19.53125 0.3125 18.117188 1.382812 18.121094 2.980469 C 18.121094 4.277344 19.035156 5.023438 20.511719 5.40625 L 21.53125 5.671875 C 22.5 5.917969 23.140625 6.222656 23.144531 6.925781 C 23.140625 7.695312 22.414062 8.210938 21.351562 8.210938 C 20.335938 8.210938 19.546875 7.753906 19.484375 6.804688 L 17.882812 6.804688 C 17.949219 8.601562 19.277344 9.613281 21.367188 9.613281 C 23.515625 9.613281 24.765625 8.53125 24.769531 6.9375 C 24.765625 5.371094 23.480469 4.65625 22.132812 4.332031 L 21.292969 4.121094 C 20.554688 3.945312 19.757812 3.632812 19.765625 2.878906 C 19.773438 2.199219 20.375 1.699219 21.390625 1.699219 C 22.359375 1.699219 23 2.152344 23.082031 2.921875 Z M 26.148438 9.472656 L 27.734375 9.472656 L 27.734375 2.695312 L 26.148438 2.695312 Z M 26.945312 1.734375 C 27.449219 1.734375 27.859375 1.347656 27.859375 0.871094 C 27.859375 0.386719 27.449219 0 26.945312 0 C 26.4375 0 26.023438 0.386719 26.023438 0.871094 C 26.023438 1.347656 26.4375 1.734375 26.945312 1.734375 Z M 31.859375 9.59375 C 33.015625 9.59375 33.539062 8.902344 33.789062 8.40625 L 33.882812 8.40625 L 33.882812 9.472656 L 35.441406 9.472656 L 35.441406 0.4375 L 33.851562 0.4375 L 33.851562 3.816406 L 33.789062 3.816406 C 33.546875 3.328125 33.050781 2.609375 31.863281 2.609375 C 30.308594 2.609375 29.085938 3.835938 29.085938 6.09375 C 29.085938 8.328125 30.273438 9.59375 31.859375 9.59375 Z M 32.300781 8.28125 C 31.253906 8.28125 30.703125 7.355469 30.703125 6.085938 C 30.703125 4.824219 31.246094 3.917969 32.300781 3.917969 C 33.324219 3.917969 33.882812 4.769531 33.882812 6.085938 C 33.882812 7.402344 33.3125 8.28125 32.300781 8.28125 Z M 40.109375 9.605469 C 41.679688 9.605469 42.757812 8.835938 43.035156 7.65625 L 41.554688 7.488281 C 41.339844 8.0625 40.816406 8.363281 40.132812 8.363281 C 39.109375 8.363281 38.429688 7.683594 38.414062 6.523438 L 43.101562 6.523438 L 43.101562 6.03125 C 43.101562 3.652344 41.683594 2.609375 40.027344 2.609375 C 38.101562 2.609375 36.84375 4.035156 36.84375 6.125 C 36.84375 8.253906 38.082031 9.605469 40.109375 9.605469 Z M 38.421875 5.445312 C 38.46875 4.582031 39.101562 3.851562 40.050781 3.851562 C 40.960938 3.851562 41.574219 4.523438 41.582031 5.445312 Z M 44.511719 9.472656 L 46.074219 9.472656 L 46.074219 8.40625 L 46.164062 8.40625 C 46.414062 8.902344 46.933594 9.59375 48.089844 9.59375 C 49.675781 9.59375 50.863281 8.328125 50.863281 6.09375 C 50.863281 3.835938 49.640625 2.609375 48.085938 2.609375 C 46.902344 2.609375 46.40625 3.328125 46.164062 3.816406 L 46.097656 3.816406 L 46.097656 0.4375 L 44.511719 0.4375 Z M 46.066406 6.085938 C 46.066406 4.769531 46.628906 3.917969 47.648438 3.917969 C 48.703125 3.917969 49.25 4.824219 49.25 6.085938 C 49.25 7.355469 48.695312 8.28125 47.648438 8.28125 C 46.636719 8.28125 46.066406 7.402344 46.066406 6.085938 Z M 52.96875 12.015625 C 54.203125 12.015625 54.917969 11.375 55.300781 10.296875 L 58 2.707031 L 56.304688 2.695312 L 54.75 7.816406 L 54.679688 7.816406 L 53.128906 2.695312 L 51.449219 2.695312 L 53.886719 9.617188 L 53.753906 9.980469 C 53.460938 10.753906 52.996094 10.808594 52.304688 10.605469 L 51.933594 11.847656 C 52.148438 11.9375 52.535156 12.015625 52.96875 12.015625 Z M 52.96875 12.015625 " />
+        </g>
+      </svg>
+    </div>
+    <div class="main">
+      <div id="users" class="users"></div>
+      <div class="settings">
+        <div class="setting">
+          <label class="label">Audio input:</label>
+          <select id="input-selector" class="selector" onchange="onInputChange(this.value)"></select>
+        </div>
+      </div>
+      <div class="buttons">
+        <button class="button end-call-button" onclick="endCall();">
+          <svg width="32" height="25" viewBox="0 0 32 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M13.4085 18.2755L10.9285 15.3719C10.5885 14.9742 10.0185 14.84 9.52848 15.0412L3.92851 17.3412C3.39351 17.5616 3.10351 18.1126 3.23351 18.6589L4.4335 23.6421C4.5585 24.1596 5.0385 24.5333 5.6035 24.5333C10.6385 24.5333 15.2884 22.9809 19.0884 20.3695L15.0884 17.4083C14.5435 17.7197 13.9835 18.0168 13.4085 18.2755ZM31.6884 21.9507L23.7534 16.0762C26.8934 12.2861 28.7984 7.51848 28.7984 2.30047C28.7984 1.76381 28.4134 1.29903 27.8684 1.17924L22.6684 0.0292675C22.1034 -0.0953132 21.5234 0.187389 21.2934 0.695295L18.8934 6.06185C18.6834 6.53142 18.8234 7.08245 19.2384 7.40349L22.2684 9.7801C21.6584 11.0307 20.8734 12.1903 19.9684 13.2684L2.27352 0.163431C1.92352 -0.0953132 1.42352 -0.0378144 1.14852 0.297595L0.168527 1.50507C-0.101472 1.84048 -0.0414722 2.31964 0.308526 2.57838L29.7284 24.3656C30.0784 24.6244 30.5784 24.5669 30.8534 24.2315L31.8334 23.0192C32.1034 22.6934 32.0384 22.2094 31.6884 21.9507Z"
+              fill="#C4C4C4" />
+            <path
+              d="M13.4085 18.2755L10.9285 15.3719C10.5885 14.9742 10.0185 14.84 9.52848 15.0412L3.92851 17.3412C3.39351 17.5616 3.10351 18.1126 3.23351 18.6589L4.4335 23.6421C4.5585 24.1596 5.0385 24.5333 5.6035 24.5333C10.6385 24.5333 15.2884 22.9809 19.0884 20.3695L15.0884 17.4083C14.5435 17.7197 13.9835 18.0168 13.4085 18.2755ZM31.6884 21.9507L23.7534 16.0762C26.8934 12.2861 28.7984 7.51848 28.7984 2.30047C28.7984 1.76381 28.4134 1.29903 27.8684 1.17924L22.6684 0.0292675C22.1034 -0.0953132 21.5234 0.187389 21.2934 0.695295L18.8934 6.06185C18.6834 6.53142 18.8234 7.08245 19.2384 7.40349L22.2684 9.7801C21.6584 11.0307 20.8734 12.1903 19.9684 13.2684L2.27352 0.163431C1.92352 -0.0953132 1.42352 -0.0378144 1.14852 0.297595L0.168527 1.50507C-0.101472 1.84048 -0.0414722 2.31964 0.308526 2.57838L29.7284 24.3656C30.0784 24.6244 30.5784 24.5669 30.8534 24.2315L31.8334 23.0192C32.1034 22.6934 32.0384 22.2094 31.6884 21.9507Z"
+              fill="white" />
+          </svg>
+        </button>
+        <button id="active-microphone-button" class="button mute" onclick="mute();">
+          <svg width="22" height="32" viewBox="0 0 22 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M11 22C14.3138 22 17 19.3137 17 16V6C17 2.68625 14.3138 0 11 0C7.68625 0 5 2.68625 5 6V16C5 19.3137 7.68625 22 11 22ZM21 12H20C19.4475 12 19 12.4475 19 13V16C19 20.675 14.9694 24.4263 10.2006 23.9613C6.04438 23.5556 3 19.8194 3 15.6438V13C3 12.4475 2.5525 12 2 12H1C0.4475 12 0 12.4475 0 13V15.51C0 21.1125 3.99813 26.1069 9.5 26.8656V29H6C5.4475 29 5 29.4475 5 30V31C5 31.5525 5.4475 32 6 32H16C16.5525 32 17 31.5525 17 31V30C17 29.4475 16.5525 29 16 29H12.5V26.8894C17.8569 26.1544 22 21.5562 22 16V13C22 12.4475 21.5525 12 21 12Z"
+              fill="#43414F" />
+          </svg>
+        </button>
+        <button id="inactive-microphone-button" class="button unmute hide" onclick="unMute();">
+          <svg width="40" height="32" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M39.6137 28.6311L29.7512 21.0086C30.5381 19.508 30.9999 17.813 30.9999 15.9999V12.9999C30.9999 12.4474 30.5524 11.9999 29.9999 11.9999H28.9999C28.4474 11.9999 27.9999 12.4474 27.9999 12.9999V15.9999C27.9999 17.1199 27.7524 18.1749 27.3299 19.1374L25.6706 17.8549C25.8643 17.2674 26.0006 16.6536 26.0006 16.0005V5.99996C26.0006 2.68623 23.3143 0 20.0006 0C16.6868 0 14.0006 2.68623 14.0006 5.99996V8.83494L2.84182 0.210624C2.40557 -0.128124 1.77682 -0.0499997 1.43807 0.386247L0.21057 1.96561C-0.12818 2.40123 -0.0500554 3.02936 0.386194 3.36873L37.1587 31.7892C37.5949 32.1285 38.2231 32.0498 38.5624 31.6135L39.7899 30.0342C40.1281 29.5986 40.0499 28.9704 39.6137 28.6311ZM24.9999 28.9998H21.4999V26.8892C22.2287 26.7892 22.9281 26.6055 23.6043 26.3698L20.4724 23.9492C20.0531 23.9742 19.6343 24.0036 19.2006 23.9617C15.7099 23.6211 13.0293 20.9224 12.2518 17.5961L8.99994 15.0818V15.5099C8.99994 21.1124 12.9981 26.1067 18.4999 26.8654V28.9998H14.9999C14.4474 28.9998 13.9999 29.4473 13.9999 29.9998V30.9998C13.9999 31.5523 14.4474 31.9998 14.9999 31.9998H24.9999C25.5524 31.9998 25.9999 31.5523 25.9999 30.9998V29.9998C25.9999 29.4473 25.5524 28.9998 24.9999 28.9998Z"
+              fill="#FFFFFF" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,64 @@
+<div class="shr-users">
+  <h2 class="title">{{'USERS.TITLE' | literal: lan}}</h2>
+  <div *ngIf="isAdmin" class="wrapper users-info">
+    <div class="user new">
+      <button *ngIf="!newUser" class="{{newUser ? 'u-hidden' : ''}}" pButton class="p-button-secondary"
+        (click)="initializeNewUser()" label="{{'USERS.CREATE_NEW_USER' | literal: lan}}" icon="pi pi-plus"></button>
+      <div *ngIf="newUser">
+        <div class="user-name">{{'USERS.NEW_USER' | literal: lan}}</div>
+        <div class="user-description">{{'USERS.NEW_USER_DESCRIPTION' | literal: lan}}</div>
+        <div class="info">
+          <div class="input-content p-float-label">
+            <p-dropdown inputId="dropdown-role-nu" [options]="rolesOptions" [autoDisplayFirst]="false"
+              [(ngModel)]="newUser.role"></p-dropdown>
+            <label for="dropdown-role-nu">{{'USERS.ROLE_LABEL' | literal: lan}}</label>
+          </div>
+          <div class="input-content p-float-label">
+            <input pInputText id="float-input-email-nu" class="input" [(ngModel)]="newUser.email" data-hj-allow readonly
+              (focus)="allowEdition($event)" (blur)="avoidEdition($event)">
+            <label for="float-input-email-nu">{{'USERS.EMAIL_LABEL' | literal: lan}}</label>
+          </div>
+          <div class="input-content p-float-label">
+            <input pInputText id="float-input-name-nu" class="input" [(ngModel)]="newUser.name" data-hj-allow readonly
+              (focus)="allowEdition($event)" (blur)="avoidEdition($event)">
+            <label for="float-input-name-nu">{{'USERS.NAME_LABEL' | literal: lan}}</label>
+          </div>
+          <div class="input-content p-float-label">
+            <input pInputText id="float-input-password-nu" class="input" type="password" [(ngModel)]="newUser.password"
+              readonly (focus)="allowEdition($event)" (blur)="avoidEdition($event)">
+            <label for="float-input-password-nu">{{'USERS.PASSWORD_LABEL' | literal: lan}}</label>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="newUser" class="button-content">
+        <button pButton class="p-button-secondary" (click)="cancelNewUser()"
+          label="{{'COMMON.CANCEL' | literal: lan}}"></button>
+        <button pButton [disabled]="!newUser.email || !newUser.password || !newUser.name || !newUser.role"
+          (click)="createUser()" label="{{'USERS.ADD_USER' | literal: lan}}"></button>
+      </div>
+    </div>
+    <div *ngFor="let userData of users; let i = index;" class="user">
+      <div class="user-name">{{userData.name}}</div>
+      <div class="info">
+        <div class="input-content p-float-label">
+          <p-dropdown inputId="dropdown-role-{{i}}" [options]="rolesOptions" [autoDisplayFirst]="false"
+            [(ngModel)]="userData.role"></p-dropdown>
+          <label for="dropdown-role-{{i}}">{{'USERS.ROLE_LABEL' | literal: lan}}</label>
+        </div>
+        <div class="input-content p-float-label">
+          <input pInputText id="float-input-email-{{i}}" class="input" [(ngModel)]="userData.email" data-hj-allow>
+          <label for="float-input-email-{{i}}">{{'USERS.EMAIL_LABEL' | literal: lan}}</label>
+        </div>
+        <div class="input-content p-float-label">
+          <input pInputText id="float-input-password-{{i}}" class="input" type="password"
+            [(ngModel)]="userData.password" readonly (focus)="allowEdition($event)" (blur)="avoidEdition($event)">
+          <label for="float-input-password-{{i}}">{{'USERS.PASSWORD_LABEL' | literal: lan}}</label>
+        </div>
+      </div>
+      <div class="button-content">
+        <button pButton [disabled]="!userData.email" (click)="handleUpdateUser(userData)"
+          label="{{'COMMON.UPDATE' | literal: lan}}"></button>
+      </div>
+    </div>
+  </div>
+</div>

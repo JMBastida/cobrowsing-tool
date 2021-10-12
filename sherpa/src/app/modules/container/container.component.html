@@ -1,0 +1,92 @@
+<div class="shr-container">
+  <div class="top-bar">
+    <div class="pointer" (click)="handleOnSelect({url:''})">
+      <img class="miniature" src="../../../assets/images/miniature.svg" />
+    </div>
+    <div class="burger-menu">
+      <div class="icon pi pi-bars" (click)="switchMenu()"></div>
+      <p-sidebar [(visible)]="showMenu" position="top" [showCloseIcon]="false">
+        <div *ngIf="menuOptions" class="options">
+          <div *ngFor="let option of menuOptions"
+            class="option {{selected?.label === option.label ? 'selected bold' : ''}} {{option.class || ''}}"
+            (click)="handleOnSelect(option)">
+            <div *ngIf="!option.svg" class="icon black {{option.icon}}"></div>
+            <div *ngIf="option.svg" class="icon">
+              <svg *ngIf="option.svg === 'fa-life-ring'" class="svg black" width="14" height="14" viewBox="0 0 512 512"
+                fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm168.766 113.176l-62.885 62.885a128.711 128.711 0 0 0-33.941-33.941l62.885-62.885a217.323 217.323 0 0 1 33.941 33.941zM256 352c-52.935 0-96-43.065-96-96s43.065-96 96-96 96 43.065 96 96-43.065 96-96 96zM363.952 68.853l-66.14 66.14c-26.99-9.325-56.618-9.33-83.624 0l-66.139-66.14c66.716-38.524 149.23-38.499 215.903 0zM121.176 87.234l62.885 62.885a128.711 128.711 0 0 0-33.941 33.941l-62.885-62.885a217.323 217.323 0 0 1 33.941-33.941zm-52.323 60.814l66.139 66.14c-9.325 26.99-9.33 56.618 0 83.624l-66.139 66.14c-38.523-66.715-38.5-149.229 0-215.904zm18.381 242.776l62.885-62.885a128.711 128.711 0 0 0 33.941 33.941l-62.885 62.885a217.366 217.366 0 0 1-33.941-33.941zm60.814 52.323l66.139-66.14c26.99 9.325 56.618 9.33 83.624 0l66.14 66.14c-66.716 38.524-149.23 38.499-215.903 0zm242.776-18.381l-62.885-62.885a128.711 128.711 0 0 0 33.941-33.941l62.885 62.885a217.323 217.323 0 0 1-33.941 33.941zm52.323-60.814l-66.14-66.14c9.325-26.99 9.33-56.618 0-83.624l66.14-66.14c38.523 66.715 38.5 149.229 0 215.904z">
+                </path>
+              </svg>
+            </div>
+            <div class="label"> {{option.label}}</div>
+          </div>
+          <div class="option" (click)="handleLogOut()">
+            <div class="icon black pi pi-sign-out"></div>
+            <div class="label"> {{'AUTH.LOGOUT' | literal: lan}}</div>
+          </div>
+        </div>
+      </p-sidebar>
+    </div>
+  </div>
+  <div class="content">
+    <div class="vertical-menu">
+      <div class="pointer" (click)="handleOnSelect({url:''})">
+        <div class="img-content">
+          <img class="miniature" src="../../../assets/images/miniature.svg" />
+          <img class="brand-name" src="../../../assets/images/name_black.svg" />
+        </div>
+      </div>
+      <div class="options pointer">
+        <div *ngFor="let option of menuOptions"
+          class="option {{selected?.label === option.label ? 'bold selected' : ''}} {{option.class || ''}}"
+          (click)="handleOnSelect(option)">
+          <div *ngIf="!option.svg" class="icon black {{option.icon}}"></div>
+          <div *ngIf="option.svg" class="icon">
+            <svg *ngIf="option.svg === 'fa-life-ring'" class="svg black" width="14" height="14" viewBox="0 0 512 512"
+              fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm168.766 113.176l-62.885 62.885a128.711 128.711 0 0 0-33.941-33.941l62.885-62.885a217.323 217.323 0 0 1 33.941 33.941zM256 352c-52.935 0-96-43.065-96-96s43.065-96 96-96 96 43.065 96 96-43.065 96-96 96zM363.952 68.853l-66.14 66.14c-26.99-9.325-56.618-9.33-83.624 0l-66.139-66.14c66.716-38.524 149.23-38.499 215.903 0zM121.176 87.234l62.885 62.885a128.711 128.711 0 0 0-33.941 33.941l-62.885-62.885a217.323 217.323 0 0 1 33.941-33.941zm-52.323 60.814l66.139 66.14c-9.325 26.99-9.33 56.618 0 83.624l-66.139 66.14c-38.523-66.715-38.5-149.229 0-215.904zm18.381 242.776l62.885-62.885a128.711 128.711 0 0 0 33.941 33.941l-62.885 62.885a217.366 217.366 0 0 1-33.941-33.941zm60.814 52.323l66.139-66.14c26.99 9.325 56.618 9.33 83.624 0l66.14 66.14c-66.716 38.524-149.23 38.499-215.903 0zm242.776-18.381l-62.885-62.885a128.711 128.711 0 0 0 33.941-33.941l62.885 62.885a217.323 217.323 0 0 1-33.941 33.941zm52.323-60.814l-66.14-66.14c9.325-26.99 9.33-56.618 0-83.624l66.14-66.14c38.523 66.715 38.5 149.229 0 215.904z">
+              </path>
+            </svg>
+          </div>
+          <div class="label"> {{option.label}}</div>
+        </div>
+        <div (click)="handleLogOut()" class="option logout">
+          <div class="icon black pi pi-sign-out"></div>
+          <div class="label"> {{'AUTH.LOGOUT' | literal: lan}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="routing-content">
+      <div class="status-bar">
+        <div class="state-options">
+          <div class="language-options">
+            <img class="pointer {{lan === languages.EN ? 'selected' : ''}}" src="../../../assets/images/en.png"
+              (click)="changeLanguage(languages.EN)">
+            <img class="pointer {{lan === languages.ES ? 'selected' : ''}}" src="../../../assets/images/es.png"
+              (click)="changeLanguage(languages.ES)">
+          </div>
+        </div>
+        <button *ngIf="!isScriptInstalled" pButton label="{{'CONTAINER.SETUP_SCRIPT' | literal: lan}}"
+          icon="pi pi-cog" class="open-settings-button" (click)="openInstallationScriptPopup()"></button>
+        <button *ngIf="isScriptInstalled && smartLink" pButton [label]="smartLink" icon="pi pi-copy" class="smart-link"
+          (click)="copySmartLink()" pTooltip="{{'CONTAINER.SMART_LINK' | literal: lan}}"></button>
+        <button *ngIf="user && isAdmin && isScriptInstalled && !smartLink" pButton class="smart-link-advise"
+          label="{{'CONTAINER.SETUP_SMART_LINK' | literal: lan}}" (click)="setUpSmartLink()"
+          pTooltip="{{'CONTAINER.SET_COMPANY_SITE' | literal: lan}}"></button>
+      </div>
+      <div class="routing">
+        <router-outlet></router-outlet>
+        <p-confirmDialog header="{{'CONTAINER.CONFIRM_HEADER' | literal: lan}}" icon="pi pi-exclamation-triangle"
+          acceptLabel="{{'COMMON.YES' | literal: lan}}" rejectLabel="{{'COMMON.NO' | literal: lan}}"></p-confirmDialog>
+      </div>
+    </div>
+  </div>
+  <p-dialog [baseZIndex]="10001" header="{{'CONTAINER.DEVICE_INFO' | literal: lan}}" [(visible)]="showDeviceDialog"
+    [modal]="true" [dismissableMask]="true" [draggable]="false" [resizable]="false" [blockScroll]="true"
+    styleClass="device-dialog">
+    <div class="device-advice">{{'CONTAINER.DEVICE_ADVICE' | literal : lan}}</div>
+    <p-footer></p-footer>
+  </p-dialog>
+</div>

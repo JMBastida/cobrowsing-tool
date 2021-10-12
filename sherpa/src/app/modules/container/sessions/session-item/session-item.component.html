@@ -1,0 +1,140 @@
+<div class="shr-session-list-item">
+  <h6>{{customer?.name}}</h6>
+  <section class="subtitle text-small">
+    <span>{{ customer?.firstConnectionDate | date: 'dd/MM/yy - HH:mm' }}</span>
+    <span>{{ customer?.city }}</span>
+  </section>
+  <div *ngFor="let session of sessions; let i = index;" class="sessions">
+    <div class="pointer" [ngClass]="{'content': i > 0, 'content-expanded': i > 0 && !isAccordionCollapsed}">
+      <div class="sub-tab" [ngClass]="{'active': session.isInTab, 'selected': session._id === selectedSessionId}"
+        (click)="onSessionSelect(session)">
+        <section class="title">
+          <img [src]="setIconToSession(session)"
+            [ngClass]="{'filter-white': session._id === selectedSessionId && !isSpecialIcon(session),'special-icon': isSpecialIcon(session)}" />
+          <span>{{session.locations[session.locations.length - 1]}}</span>
+        </section>
+        <div class="status">
+          <p-tag *ngIf="session.isCobrowsing" severity="success"
+            value="{{'SESSIONS.TABS_STATUS.CO_BROWSING' | literal: lan}}" [rounded]="true"></p-tag>
+          <p-tag *ngIf="!session.isInTab" severity="danger" value="{{'SESSIONS.TABS_STATUS.USER_LEFT' | literal: lan}}"
+            [rounded]="true"></p-tag>
+          <p-tag *ngIf="session.isHelpRequest" severity="warning"
+            value="{{'SESSIONS.TABS_STATUS.HELP_REQUEST' | literal: lan}}" [rounded]="true"></p-tag>
+          <p-tag *ngIf="session.userCode && session.userCode === user.code" severity="warning"
+            value="{{'SESSIONS.TABS_STATUS.SMART_LINK' | literal: lan}}" [rounded]="true"></p-tag>
+          <p-tag *ngIf="session.pin" severity="warning" value="PIN {{session.pin}}" [rounded]="true"></p-tag>
+          <p-tag *ngIf="session.isCustomFlowTriggered" severity="warning" value="{{'SESSIONS.TABS_STATUS.CUSTOM_TRIGGER' | literal: lan}}" [rounded]="true"></p-tag>
+          <p-tag *ngFor="let agent of agents" severity="info" value="{{'SESSIONS.TABS_STATUS.AGENT' | literal: lan}} {{agent.name}}" [rounded]="true"></p-tag>
+        </div>
+        <div class="content" [ngClass]="{'content-expanded': subTabExpanded[i], 'filter-white': session._id === selectedSessionId}">
+          <div *ngIf="session.deviceInfo || session.metadata || session.geolocation?.ip; else no_extra_info"
+            class="session-device">
+            <ul *ngIf="session.metadata;">
+              <li *ngIf="session.metadata.id;">
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.IDENTITY.ID' | literal: lan}}:</span>
+                  {{session.metadata.id || ''}}
+                </span>
+              </li>
+              <li *ngIf="session.metadata.email;">
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.IDENTITY.EMAIL' | literal: lan}}:</span>
+                  {{session.metadata.email || ''}}
+                </span>
+              </li>
+              <li *ngIf="session.metadata.phone">
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.IDENTITY.PHONE' | literal: lan}}:</span>
+                  {{session.metadata.phone || ' -'}}
+                </span>
+              </li>
+              <li *ngIf="session.metadata.language">
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.IDENTITY.LANGUAGE' | literal: lan}}:</span>
+                  {{session.metadata.language || ' -'}}
+                </span>
+              </li>
+              <li *ngIf="session.metadata.role">
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.IDENTITY.ROLE' | literal: lan}}:</span>
+                  {{session.metadata.role || ' -'}}
+                </span>
+              </li>
+              <li *ngIf="session.metadata.creationDate">
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.IDENTITY.CREATION_DATE' | literal: lan}}:</span>
+                  {{(session.metadata.creationDate | date: 'dd/MM/yy - HH:mm:ss') || ' -'}}
+                </span>
+              </li>
+              <li *ngIf="session.metadata.isPaying">
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.IDENTITY.IS_PAYING' | literal: lan}}:</span>
+                  {{session.metadata.isPaying || ' -'}}
+                </span>
+              </li>
+              <div *ngFor="let prop of session.metadata | keyvalue">
+                <li *ngIf="!basicProperties.includes(prop.key)">
+                  <span class="device-info">
+                    <span class="bold">{{prop.key}}:</span>
+                    {{prop.value}}
+                  </span>
+                </li>
+              </div>
+            </ul>
+            <ul *ngIf="session.deviceInfo">
+              <li>
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.DEVICE' | literal: lan}}:</span>
+                  {{session.deviceInfo.device || ''}}
+                </span>
+              </li>
+              <li>
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.OS' | literal: lan}}:</span>
+                  {{session.deviceInfo.os || ''}}
+                </span>
+              </li>
+              <li>
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.BROWSER' | literal: lan}}:</span>
+                  {{session.deviceInfo.browser || ''}}
+                </span>
+              </li>
+              <li>
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.VERSION' | literal: lan}}:</span>
+                  {{session.deviceInfo.version || ''}}
+                </span>
+              </li>
+              <li>
+                <span class="device-info">
+                  <span class="bold">{{'SESSIONS.LANGUAGE' | literal: lan}}:</span>
+                  {{session.deviceInfo.language || ''}}
+                </span>
+              </li>
+            </ul>
+          </div>
+          <ng-template #no_extra_info>
+            <p>{{'SESSIONS.NOT_AVAILABLE' | literal: lan}}</p>
+          </ng-template>
+        </div>
+        <div class="info" (click)="toggleSubTabAccordion($event, i)">
+            <i class="pi pi-angle-down" [ngClass]="{'filter-white': session._id === selectedSessionId, 'pi-angle-up': subTabExpanded[i]}"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="footer" (click)="toggleTabAccordion($event)">
+    <div class="sections">
+      <div [ngClass]="{'visible': isAccordionCollapsed, 'invisible': !isAccordionCollapsed}">
+        <img *ngFor="let session of filterSessions() | slice:1; let i = index" [src]="setIconToSession(session)"
+          [ngClass]="{'special-icon': isSpecialIcon(session)}" />
+      </div>
+      <div class="arrow-section " [ngClass]="{'display-none': sessions.length <= 1}">
+        <span>{{isAccordionCollapsed ? '1' : sessions.length}} {{'COMMON.OF' | literal: lan}} {{sessions.length}}
+          {{('SESSIONS.TABS' | literal: lan) | lowercase}} </span>
+        <i class="pi pi-angle-down" [ngClass]="{'pi-angle-up': !isAccordionCollapsed}"></i>
+      </div>
+    </div>
+  </section>
+</div>

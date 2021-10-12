@@ -1,0 +1,47 @@
+{
+  "entityId": {
+    "type": "reference",
+    "schema": "entity"
+  },
+  "name": {
+    "type": "string"
+  },
+  "lastName": {
+    "type": "string"
+  },
+  "email": {
+    "type": "string"
+  },
+  "phone": {
+    "type": "number"
+  },
+  "role": {
+    "type": "string",
+    "values": [
+      "SUPER",
+      "ADMIN",
+      "USER"
+    ]
+  },
+  "code": {
+    "type": "string"
+  },
+  "scopes": [
+    {
+      "type": "string",
+      "values": []
+    }
+  ],
+  "language": {
+    "type": "string"
+  },
+  "avatarUrl": {
+    "type": "string"
+  },
+  "creationDate": {
+    "type": "date"
+  },
+  "modificationDate": {
+    "type": "date"
+  }
+}

@@ -1,0 +1,141 @@
+<div class="shr-sessions">
+  <div class="wrapper left">
+    <div class="search">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input type="text" pInputText placeholder="{{'SESSIONS.SEARCH_LOCATION' | literal: lan}}"
+          [(ngModel)]="searchString" (input)="onSearchChange()" data-hj-allow />
+      </span>
+    </div>
+    <div *ngIf="clientsData && clientsData.length" class="total-sessions">
+      {{'COMMON.SHOWING' | literal: lan}} {{clientsData.length}} {{'COMMON.OF' | literal: lan}} {{totalSessionsString}}
+      {{'COMMON.SESSIONS_LC' | literal: lan}}</div>
+    <div class="sessions">
+      <div *ngIf="!clientsData || !clientsData.length" class="no-sessions">
+        <p>{{'SESSIONS.NOT_SESSIONS_FOUND' | literal: lan}}</p>
+        <button pButton *ngIf="isAdmin && entity && !entity.isScriptInstalled" (click)="openInstallationScriptPopup()"
+          label="{{'SESSIONS.SETUP_SIDEBY' | literal: lan}}"></button>
+        <img src="../../../../assets/images/skeleton-sessions-list.png" alt="sessions skeleton">
+      </div>
+      <div *ngFor="let clientData of clientsData">
+        <shr-session-list-item [clientData]="clientData" (watchSession)="watchSession($event)"
+          [selectedSessionId]="sessionId"></shr-session-list-item>
+      </div>
+    </div>
+    <div *ngIf="totalSessions && totalSessions > rows" class="sessions-paginator">
+      <p-paginator [rows]="rows" [totalRecords]="totalSessions" [first]="first" [pageLinkSize]="3"
+        styleClass="{{page < 2 ? 'hide-first' : ''}} {{page > pageCount - 3 ? 'hide-last' : ''}}"
+        (onPageChange)="onPageChange($event)"></p-paginator>
+    </div>
+  </div>
+  <div class="wrapper right">
+    <button *ngIf="hasCalls && isOnCall" pButton class="end-call-button p-button-danger p-button-icon-only"
+      (click)="endCall()">
+      <img class="icon" src="../../../../assets/icons/fontawesome/phone-slash-solid-active.svg" />
+    </button>
+    <div *ngIf="sessionId" class="top-content">
+      <div class="button-content">
+        <button *ngIf="!isCobrowsing && !isCobrowsingRequest"
+          [disabled]="isSomeoneCoBrowsing || isSomeoneRequesting || !session || session.isTabClosed" pButton
+          label="{{'SESSIONS.REQUEST_ACCESS' | literal: lan}}" (click)="requestAccess()"></button>
+        <button *ngIf="isCobrowsingRequest" pButton class="p-button-danger p-button-outlined"
+          label="{{'SESSIONS.STOP_CO_BROWSING_REQUEST' | literal: lan}}" (click)="stopCoBrowsingRequest()"></button>
+        <button *ngIf="isCobrowsing" pButton class="p-button-danger p-button-outlined"
+          label="{{'SESSIONS.STOP_CO_BROWSING' | literal: lan}}" (click)="stopCoBrowsing()"></button>
+        <button *ngIf="!isCobrowsing && !isCobrowsingRequest" pButton class="p-button-danger p-button-outlined"
+          label="{{'SESSIONS.LEAVE_SESSION' | literal: lan}}" (click)="stopWatching()"></button>
+        <button *ngIf="hasCalls && !isOnCall && !isClientOnCall" pButton class="p-button-info start-call-button"
+          label="{{'SESSIONS.START_CALL' | literal: lan}}" (click)="startCall()"></button>
+        <button *ngIf="hasCalls && !isOnCall && isClientOnCall" pButton class="p-button-info join-call-button"
+          label="{{'SESSIONS.JOIN_CLIENT_CALL' | literal: lan}}" (click)="joinClientCall()"></button>
+        <button *ngIf="hasCalls && isOnCall && !isClientOnCall" pButton class="p-button-info recall-call-button"
+          label="{{'SESSIONS.RECALL' | literal: lan}}" (click)="reCall()"></button>
+      </div>
+      <input pInputText class="name-input" placeholder="{{'SESSIONS.CLIENT_SESSION_NAME' | literal: lan}}"
+        [(ngModel)]="clientName" (change)="onNameChange()" data-hj-allow>
+    </div>
+    <div *ngIf="!sessionId" class="user-screen-placeholder">
+      <p>{{'SESSIONS.USER_SCREEN_PLACEHOLDER' | literal: lan}}</p>
+      <img src="../../../../assets/images/placeholder-userscreen.svg" alt="user screen placeholder">
+    </div>
+    <shr-sessions-tabs-view *ngIf="sessionId" [sessions]="currentClientDataSessions" [selectedSessionId]="sessionId" (watchSession)="watchSession($event)"></shr-sessions-tabs-view>
+    <div *ngIf="session && currentClientDataSessions" class="url-container">
+      <p-dropdown #sessions_select [options]="currentClientDataSessions" [(ngModel)]="selectedSession" [showClear]="false" placeholder="URL">
+        <ng-template pTemplate="selectedItem">
+          <div class="country-item country-item-value"  *ngIf="selectedSession">
+              <div>{{selectedSession.locations[session.locations.length - 1]}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-currentSession pTemplate="item">
+          <div class="current-session-item">
+              <div>{{currentSession.locations[session.locations.length - 1]}}</div>
+          </div>
+        </ng-template>
+      </p-dropdown>
+              <!--<input pInputText [(ngModel)]="session.locations[session.locations.length - 1]">-->
+      <p-toggleButton [(ngModel)]="isSelectExpanded" (click)="selectedSessionFromDropdown()" onIcon="pi pi-angle-down" offIcon="pi pi-angle-up"></p-toggleButton>
+    </div>
+    <div *ngIf="session && currentClientDataSessions" class="screen-container" [ngClass]="{'pointer-forbidden': !isCobrowsing}">
+      <div #clientCursor class="client-cursor">
+          <svg *ngIf="sessionId" id="client-cursor-svg" width="21" height="27" viewBox="0 0 21 27" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <g id="sideby / app assets /cursor / cursor only user" clip-path="url(#clip0)">
+              <g id="Union">
+                <mask id="path-1-outside-1" maskUnits="userSpaceOnUse" x="-7.23205" y="-4.54962" width="33.9186"
+                  height="35.7487" fill="black">
+                  <rect fill="white" x="-7.23205" y="-4.54962" width="33.9186" height="35.7487" />
+                  <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M7.04132 1.90833C4.68113 0.545674 1.7309 2.24899 1.7309 4.9743L1.7309 17.5155C1.7309 20.2408 4.68113 21.9441 7.04132 20.5815L9.84215 18.9644L11.8823 22.498C12.7315 23.969 14.6124 24.4729 16.0833 23.6237C17.5543 22.7744 18.0583 20.8936 17.209 19.4226L15.1689 15.889L17.9023 14.3109C20.2625 12.9482 20.2625 9.54158 17.9023 8.17892L7.04132 1.90833Z" />
+                </mask>
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M7.04132 1.90833C4.68113 0.545674 1.7309 2.24899 1.7309 4.9743L1.7309 17.5155C1.7309 20.2408 4.68113 21.9441 7.04132 20.5815L9.84215 18.9644L11.8823 22.498C12.7315 23.969 14.6124 24.4729 16.0833 23.6237C17.5543 22.7744 18.0583 20.8936 17.209 19.4226L15.1689 15.889L17.9023 14.3109C20.2625 12.9482 20.2625 9.54158 17.9023 8.17892L7.04132 1.90833Z"
+                  fill="#04272D" />
+                <path
+                  d="M1.7309 4.9743L2.7309 4.9743L1.7309 4.9743ZM7.04132 1.90833L7.54132 1.0423L7.54131 1.0423L7.04132 1.90833ZM1.7309 17.5155H2.7309H1.7309ZM7.04132 20.5815L7.54132 21.4475L7.04132 20.5815ZM9.84215 18.9644L10.7082 18.4644L10.2082 17.5984L9.34215 18.0984L9.84215 18.9644ZM17.209 19.4226L18.075 18.9226L17.209 19.4226ZM15.1689 15.889L14.6689 15.023L13.8029 15.523L14.3029 16.389L15.1689 15.889ZM17.9023 8.17892L17.4023 9.04495L17.9023 8.17892ZM2.7309 4.9743C2.7309 3.01879 4.8478 1.7966 6.54132 2.77435L7.54131 1.0423C4.51446 -0.705253 0.730901 1.4792 0.730901 4.9743L2.7309 4.9743ZM2.7309 17.5155L2.7309 4.9743L0.730901 4.9743L0.730901 17.5155H2.7309ZM6.54132 19.7154C4.8478 20.6932 2.7309 19.471 2.7309 17.5155H0.730901C0.7309 21.0106 4.51447 23.195 7.54132 21.4475L6.54132 19.7154ZM9.34215 18.0984L6.54132 19.7154L7.54132 21.4475L10.3422 19.8304L9.34215 18.0984ZM12.7483 21.998L10.7082 18.4644L8.97613 19.4644L11.0163 22.998L12.7483 21.998ZM15.5833 22.7577C14.5907 23.3308 13.3214 22.9907 12.7483 21.998L11.0163 22.998C12.1417 24.9472 14.6341 25.6151 16.5833 24.4897L15.5833 22.7577ZM16.343 19.9226C16.9161 20.9153 16.576 22.1846 15.5833 22.7577L16.5833 24.4897C18.5326 23.3643 19.2004 20.8719 18.075 18.9226L16.343 19.9226ZM14.3029 16.389L16.343 19.9226L18.075 18.9226L16.0349 15.389L14.3029 16.389ZM17.4023 13.4448L14.6689 15.023L15.6689 16.755L18.4023 15.1769L17.4023 13.4448ZM17.4023 9.04495C19.0958 10.0227 19.0958 12.4671 17.4023 13.4448L18.4023 15.1769C21.4292 13.4293 21.4292 9.06045 18.4023 7.3129L17.4023 9.04495ZM6.54131 2.77435L17.4023 9.04495L18.4023 7.3129L7.54132 1.0423L6.54131 2.77435Z"
+                  fill="white" mask="url(#path-1-outside-1)" />
+              </g>
+            </g>
+            <defs>
+              <clipPath id="clip0">
+                <rect width="21" height="27" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+          <span *ngIf="sessionId && clientName" class="cursor-name">{{clientName}}</span>
+      </div>
+      <div #agentCursor class="agent-cursor">
+          <svg width="21" height="26" viewBox="0 0 21 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0)">
+              <g>
+                <g>
+                  <mask maskUnits="userSpaceOnUse" x="-5.13575" y="-4.54962" width="33.9186" height="35.7487"
+                    fill="black">
+                    <rect fill="white" x="-5.13575" y="-4.54962" width="33.9186" height="35.7487" />
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M14.5095 1.90833C16.8696 0.545674 19.8199 2.24899 19.8199 4.9743L19.8199 17.5155C19.8199 20.2408 16.8696 21.9441 14.5095 20.5815L11.7086 18.9644L9.66849 22.498C8.81925 23.969 6.93837 24.4729 5.46743 23.6237C3.9965 22.7744 3.49252 20.8936 4.34176 19.4226L6.3819 15.889L3.64847 14.3109C1.28829 12.9482 1.28829 9.54158 3.64848 8.17892L14.5095 1.90833Z" />
+                  </mask>
+                  <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M14.5095 1.90833C16.8696 0.545674 19.8199 2.24899 19.8199 4.9743L19.8199 17.5155C19.8199 20.2408 16.8696 21.9441 14.5095 20.5815L11.7086 18.9644L9.66849 22.498C8.81925 23.969 6.93837 24.4729 5.46743 23.6237C3.9965 22.7744 3.49252 20.8936 4.34176 19.4226L6.3819 15.889L3.64847 14.3109C1.28829 12.9482 1.28829 9.54158 3.64848 8.17892L14.5095 1.90833Z"
+                    fill="#00CD8E" />
+                  <path
+                    d="M19.8199 4.9743L18.8199 4.9743L19.8199 4.9743ZM14.5095 1.90833L14.0095 1.0423L14.5095 1.90833ZM19.8199 17.5155L18.8199 17.5155L19.8199 17.5155ZM14.5095 20.5815L14.0095 21.4475L14.5095 20.5815ZM11.7086 18.9644L10.8426 18.4644L11.3426 17.5984L12.2086 18.0984L11.7086 18.9644ZM6.3819 15.889L6.8819 15.023L7.74792 15.523L7.24792 16.389L6.3819 15.889ZM3.64847 14.3109L3.14847 15.1769L3.64847 14.3109ZM3.64848 8.17892L4.14848 9.04495L3.64848 8.17892ZM18.8199 4.9743C18.8199 3.01879 16.703 1.7966 15.0095 2.77435L14.0095 1.0423C17.0363 -0.705253 20.8199 1.4792 20.8199 4.9743L18.8199 4.9743ZM18.8199 17.5155L18.8199 4.9743L20.8199 4.9743L20.8199 17.5155H18.8199ZM15.0095 19.7154C16.703 20.6932 18.8199 19.471 18.8199 17.5155H20.8199C20.8199 21.0106 17.0363 23.195 14.0095 21.4475L15.0095 19.7154ZM12.2086 18.0984L15.0095 19.7154L14.0095 21.4475L11.2086 19.8304L12.2086 18.0984ZM8.80247 21.998L10.8426 18.4644L12.5747 19.4644L10.5345 22.998L8.80247 21.998ZM5.96743 22.7577C6.96008 23.3308 8.22936 22.9907 8.80247 21.998L10.5345 22.998C9.40913 24.9472 6.91666 25.6151 4.96743 24.4897L5.96743 22.7577ZM5.20779 19.9226C4.63468 20.9153 4.97479 22.1846 5.96743 22.7577L4.96743 24.4897C3.0182 23.3643 2.35035 20.8719 3.47574 18.9226L5.20779 19.9226ZM7.24792 16.389L5.20779 19.9226L3.47574 18.9226L5.51587 15.389L7.24792 16.389ZM4.14847 13.4448L6.8819 15.023L5.8819 16.755L3.14847 15.1769L4.14847 13.4448ZM4.14848 9.04495C2.45496 10.0227 2.45496 12.4671 4.14847 13.4448L3.14847 15.1769C0.12162 13.4293 0.121626 9.06045 3.14848 7.3129L4.14848 9.04495ZM15.0095 2.77435L4.14848 9.04495L3.14848 7.3129L14.0095 1.0423L15.0095 2.77435Z"
+                    fill="white" mask="url(#path-1-outside-1)" />
+                </g>
+              </g>
+            </g>
+            <defs>
+              <clipPath id="clip0">
+                <rect width="21" height="26" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+          <span class="cursor-name">{{coBrowsingAgent ? coBrowsingAgent.name : ''}}</span>
+      </div>
+      <div class="view-container">
+        <iframe #screen class="iframe" [ngClass]="{'no-border': isCobrowsing}"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-presentation" (load)="onLoadIframe()"></iframe>
+      </div>
+    </div>
+  </div>
+  
+</div>

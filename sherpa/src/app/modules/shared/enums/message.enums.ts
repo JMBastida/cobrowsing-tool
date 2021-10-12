@@ -1,0 +1,14 @@
+const SUCCESS = 'SUCCESS';
+const WARNING = 'WARNING';
+const INFO = 'INFO';
+const ERROR = 'ERROR';
+
+const WRONG_PATTERN = 'WRONG_PATTERN';
+
+export {
+  SUCCESS,
+  WARNING,
+  INFO,
+  ERROR,
+  WRONG_PATTERN,
+};

@@ -1,0 +1,119 @@
+{
+  "AUTH": {
+    "ERROR": {
+      "SIGNUP": {
+        "SUMMARY": "Error en alta de usuario",
+        "EMPTY_USER": "Comprueba que los campos estén rellenos",
+        "EMAIL": "Debes introducir un e-mail",
+        "EXISTING_EMAIL": "Este email ya esta en uso",
+        "PASSWORD": "Debes introducir una contraseña",
+        "NAME": "Debes introducir un nombre de compañía",
+        "USER_NOT_CREATED": "No se ha podido completar el registro. Inténtalo de nuevo"
+      },
+      "LOGIN": {
+        "SUMMARY": "Error al iniciar sesión",
+        "EMPTY_USER": "Comprueba que los campos estén rellenos",
+        "EMAIL": "Debes introducir un email",
+        "PASSWORD": "Debes introducir una contraseña",
+        "ENTITY": "Entidad no encontrada",
+        "USER_NOT_FOUND": "No existe este usuario",
+        "INVALID_PASSWORD": "La contraseña no es correcta"
+      },
+      "EMAIL": {
+        "SUMMARY": "Email incorrecto",
+        "INVALID_COMPANY_EMAIL": "Introduce un email corporativo válido"
+      }
+    }
+  },
+  "SHARED": {
+    "MW": {
+      "ERROR": {
+        "SUMMARY": "Error de acceso",
+        "DETAIL": "Gandalf says: - You Shall Not Pass!"
+      }
+    }
+  },
+  "ENTITY": {
+    "ERROR": {
+      "INSERT": {
+        "REQUIRED": {
+          "SUMMARY": "Revisa los campos obligatorios",
+          "DETAIL": "Debes rellenar todos los campos"
+        },
+        "EXISTING": {
+          "EMAIL_SUMMARY": "Email en uso",
+          "EMAIL_DETAIL": "Este email ya está registrado",
+          "COMPANY_SUMMARY": "Compañía registrada",
+          "COMPANY_DETAIL": "Esta compañía ya está registrada"
+        }
+      },
+      "UPDATE": {
+        "REQUIRED": {
+          "SUMMARY": "Faltan campos obligatorios",
+          "DETAIL": "Se debe informar del identificador de la entidad"
+        },
+        "EXISTING": {
+          "SUMMARY": "Error al actualizar",
+          "DETAIL": "No existe información para esta entidad"
+        },
+        "INVLAID": {
+          "CODE": {
+            "SUMMARY": "Error al actualizar",
+            "DETAIL": "Este código no es válido"
+          },
+          "EMAIL": {
+            "SUMMARY": "Error al actualizar",
+            "DETAIL": "Este email no es válido"
+          }
+        }
+      }
+    }
+  },
+  "USER": {
+    "ERROR": {
+      "INSERT": {
+        "REQUIRED": {
+          "SUMMARY": "Revisa los campos obligatorios",
+          "DETAIL": "Debes rellenar todos los campos"
+        },
+        "EXISTING": {
+          "SUMMARY": "Email en uso",
+          "DETAIL": "Este email ya está registrado"
+        },
+        "LIMIT": {
+          "SUMMARY": "Límite de usuarios alcanzado",
+          "DETAIL": "Contáctanos para ampliar el número de usuaios"
+        }
+      },
+      "UPDATE": {
+        "PASSWORD": {
+          "SUMMARY": "Error al actualizar",
+          "DETAIL": "Contraseña incorrecta"
+        },
+        "PERMISSION": {
+          "SUMMARY": "Error al actualizar",
+          "DETAIL": "No tienes permisos para editar este usuario"
+        },
+        "NOT_FOUND": {
+          "SUMMARY": "Error al actualizar",
+          "DETAIL": "Usuario no encontrado"
+        }
+      }
+    }
+  },
+  "TICKET": {
+    "ERROR": {
+      "UPDATE": {
+        "REQUIRED": {
+          "SUMMARY": "Revisa los campos obligatorios",
+          "DETAIL": "Debes rellenar todos los campos"
+        },
+        "EXISTING": {
+          "SUMMARY": "Información encontrada",
+          "DETAIL": "Este ticket ya existe"
+        }
+      }
+    }
+  },
+  "WRONG_PATTERN": "Mensaje no encontrado"
+}

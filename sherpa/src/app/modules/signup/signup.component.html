@@ -1,0 +1,22 @@
+<div class="shr-signup">
+  <div class="logo">
+    <img src="../../../assets/images/logo.svg" />
+  </div>
+  <div class="signup-form">
+    <div class="wrapper">
+      <h4 class="bold">{{'SIGNUP.SIGNUP' | literal: lan}}</h4>
+      <div class="input">
+        <label>{{'SIGNUP.EMAIL' | literal: lan}}</label>
+        <input pInputText type="text" [(ngModel)]="email" data-hj-allow>
+      </div>
+      <div class="input">
+        <label>{{'SIGNUP.PASSWORD' | literal: lan}}</label>
+        <input pInputText type="password" [(ngModel)]="password">
+      </div>
+      <div class="button-content">
+        <a routerLink="/login">{{'SIGNUP.LOGIN' | literal: lan}}</a>
+        <button pButton [disabled]="!email || !password" label="{{'SIGNUP.SIGNUP_BUTTON' | literal: lan}}" (click)="signup()"></button>
+      </div>
+    </div>
+  </div>
+</div>

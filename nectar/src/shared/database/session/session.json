@@ -1,0 +1,121 @@
+{
+  "userId": {
+    "type": "reference",
+    "schema": "user"
+  },
+  "pin": {
+    "type": "string"
+  },
+  "ip": {
+    "type": "string"
+  },
+  "geolocation": {
+    "type": "object"
+  },
+  "locations": [
+    {
+      "type": "string"
+    }
+  ],
+  "coBrowsingInfo": [
+    {
+      "startDate": {
+        "type": "Date"
+      },
+      "endDate": {
+        "type": "Date"
+      }
+    }
+  ],
+  "status": {
+    "type": "string",
+    "values": [
+      "CLIENT_ENDED",
+      "AGENT_BUSY",
+      "AGENT_ENDED",
+      "AGENT_DECLINED",
+      "UNAVAILABLE_DEVICE",
+      "AGENT_DISCONNECTED",
+      "CLIENT_DISCONNECTED"
+    ]
+  },
+  "clientName": {
+    "type": "string"
+  },
+  "deviceInfo": {
+    "os": {
+      "type": "string"
+    },
+    "device": {
+      "type": "string"
+    },
+    "browser": {
+      "type": "string"
+    },
+    "version": {
+      "type": "number"
+    },
+    "language": {
+      "type": "number"
+    }
+  },
+  "messages": [
+    {
+      "sender": {
+        "type": "string",
+        "values": [
+          "CLIENT",
+          "SELLER"
+        ]
+      },
+      "receiver": {
+        "type": "string",
+        "values": [
+          "CLIENT",
+          "SELLER"
+        ]
+      },
+      "message": {
+        "type": "string"
+      },
+      "time": {
+        "type": "number"
+      }
+    }
+  ],
+  "creationDate": {
+    "type": "date"
+  },
+  "modificationDate": {
+    "type": "date"
+  },
+  "metadata": {
+    "id": {
+      "type": "string"
+    },
+    "fullName": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "creationDate": {
+      "type": "date"
+    },
+    "isPaying": {
+      "type": "boolean"
+    },
+    "planLevel": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+@use 'variables' as var;
+
+
+shr-signup {
+  .shr-signup {
+    .logo {
+      padding: 36px 0;
+      text-align: center;
+
+      img {
+        width: 200px;
+      }
+    }
+
+    .signup-form {
+      max-width: 500px;
+      width: min-content;
+      margin: 0 auto;
+
+      h4 {
+        text-align: center;
+      }
+
+      .input {
+        margin-bottom: 12px;
+
+        input {
+          width: 100%;
+        }
+      }
+    }
+
+    .button-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-width: 250px;
+
+      button {
+        min-width: 120px;
+      }
+    }
+  }
+}

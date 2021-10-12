@@ -1,0 +1,133 @@
+{
+  "userIds": [
+    {
+      "type": "reference",
+      "schema": "user"
+    }
+  ],
+  "name": {
+    "type": "string"
+  },
+  "description": {
+    "type": "string"
+  },
+  "code": {
+    "type": "string"
+  },
+  "claimTitle": {
+    "type": "string"
+  },
+  "claimMessage": {
+    "type": "string"
+  },
+  "position": {
+    "type": "string",
+    "value": [
+      "BOTTOM_LEFT",
+      "BOTTOM_RIGHT"
+    ]
+  },
+  "acceptButtonLabel": {
+    "type": "string"
+  },
+  "backgroundColor": {
+    "type": "string"
+  },
+  "acceptButtonBackgroundColor": {
+    "type": "string"
+  },
+  "logoUrl": {
+    "type": "string"
+  },
+  "link": {
+    "type": "string"
+  },
+  "isActive": {
+    "type": "boolean"
+  },
+  "stats": {
+    "widget": {
+      "show": {
+        "type": "number"
+      },
+      "accept": {
+        "type": "number"
+      },
+      "close": {
+        "type": "number"
+      },
+      "unavailable": {
+        "type": "number"
+      }
+    },
+    "call": {
+      "missed": {
+        "type": "number"
+      },
+      "accepted": {
+        "type": "number"
+      },
+      "rejected": {
+        "type": "number"
+      },
+      "unavailable": {
+        "type": "number"
+      },
+      "unavailabledevice": {
+        "type": "number"
+      },
+      "agentdisconnected": {
+        "type": "number"
+      },
+      "clientdisconnected": {
+        "type": "number"
+      }
+    }
+  },
+  "purposes": [
+    {
+      "type": "string"
+    }
+  ],
+  "pageUrl": {
+    "type": "string"
+  },
+  "timer": {
+    "type": "number"
+  },
+  "totalPagesVisited": {
+    "type": "number"
+  },
+  "scrollDepth": {
+    "type": "string"
+  },
+  "pathsMatch": {
+    "type": {
+      "type": "string",
+      "values": [
+        "INCLUDE",
+        "EXCLUDE"
+      ]
+    },
+    "conditions": [
+      {
+        "matchType": {
+          "type": "string",
+          "values": [
+            "EXACT",
+            "CONTAINS"
+          ]
+        },
+        "path": {
+          "type": "string"
+        }
+      }
+    ]
+  },
+  "creationDate": {
+    "type": "date"
+  },
+  "modificationDate": {
+    "type": "date"
+  }
+}

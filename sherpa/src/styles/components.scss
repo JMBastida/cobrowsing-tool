@@ -1,0 +1,95 @@
+@use 'variables' as var;
+
+.wrapper {
+  margin: 12px;
+  padding: 24px;
+  border-radius: 6px;
+  background-color: var.$color-background-a;
+
+  @media screen and (max-width: 768px) {
+    margin: 0;
+    border: none;
+    padding: 12px;
+    box-shadow: none;
+  }
+}
+
+.cards-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+
+  .card {
+    width: 200px;
+  }
+}
+
+.card {
+  &:not(.disable) {
+    margin: 12px;
+    padding: 24px;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0px 0px 4px 0px var.$primary-color;
+
+    .card-icon {
+      font-size: 3em;
+    }
+
+    .card-text {
+      font-size: 1.2em;
+    }
+
+    &:hover {
+      background-color: var.$primary-light-color;
+      color: var.$primary-color-text;
+    }
+
+    &.selected {
+      background-color: var.$primary-color;
+      color: var.$primary-color-text;
+    }
+  }
+}
+
+.go-back {
+  width: 75px;
+  display: flex;
+  cursor: pointer;
+  margin-left: 12px;
+  width: fit-content;
+  align-items: center;
+
+  .icon {
+    margin-right: 6px;
+  }
+
+  &:hover {
+    font-family: "Inter SemiBold";
+
+    .icon {
+      font-weight: bold;
+    }
+  }
+}
+
+.table-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+
+  .table-options-records {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .p-dropdown {
+      width: 100px;
+      margin: 0px 12px;
+      min-width: unset;
+    }
+  }
+}

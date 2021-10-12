@@ -1,0 +1,30 @@
+//Theme
+@use "./styles/theme/theme-prime";
+@use "./styles/theme/layout-prime";
+
+// Settings
+@use "./styles/settings/variables";
+@use "./styles/settings/breakpoints";
+
+//Tools
+@use './styles/tools/mq';
+@use "./styles/tools/hidden";
+
+// Generic
+@use "./styles/generic/normalize";
+@use "./styles/generic/box-sizing";
+
+// Elements
+@use "./styles/elements/body";
+@use "./styles/elements/headings";
+@use "./styles/elements/img";
+@use "./styles/elements/links";
+
+//Objects
+//Components
+
+// Utilities
+@use './styles/utilities/text';
+@use './styles/utilities/visibility';
+
+@import "./styles/global-styles.scss";

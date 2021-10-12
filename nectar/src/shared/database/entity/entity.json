@@ -1,0 +1,60 @@
+{
+  "code": {
+    "type": "string"
+  },
+  "status": {
+    "type": "string",
+    "values": [
+      "ACTIVE",
+      "DEACTIVE"
+    ]
+  },
+  "origin": {
+    "type": "string",
+    "values": [
+      "CRM",
+      "APP",
+      "VW_FREE_TRIAL_WP",
+      "QUAL_DEMO_WP",
+      "QUAL_FREE_TRIAL_PRO_WP",
+      "QUAL_FREE_TRIAL_ADVANCED_WP"
+    ]
+  },
+  "scriptOrigins": [
+    {
+      "type": "string"
+    }
+  ],
+  "maxUsers": {
+    "type": "number"
+  },
+  "modules": {
+    "hasCalls": {
+      "type": "boolean"
+    },
+    "hasCoBrowsing": {
+      "type": "boolean"
+    },
+    "hasRecordings": {
+      "type": "boolean"
+    }
+  },
+  "companyEmail": {
+    "type": "string"
+  },
+  "emailsSent": [
+    {
+      "type": "string",
+      "values": [
+        "CHECK_SCRIPT_INSTALLATION",
+        "CHECK_ONE_WEEK_INTERACTION"
+      ]
+    }
+  ],
+  "creationDate": {
+    "type": "date"
+  },
+  "modificationDate": {
+    "type": "date"
+  }
+}

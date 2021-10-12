@@ -1,0 +1,11 @@
+const TICKET_TYPE = {
+  SETUP: 'SETUP',
+  FEATURES_SUGGESTION: 'FEATURES_SUGGESTION',
+  PRICING: 'PRICING',
+  BUGS: 'BUGS',
+  OTHER: 'OTHER',
+};
+
+module.exports = {
+  TICKET_TYPE,
+};

@@ -1,0 +1,34 @@
+p-table {
+  .p-datatable-scrollable-header-box {
+    padding-right: 0 !important;
+  }
+}
+
+p-toast {
+  .p-toast {
+    z-index: 2147483647 !important;
+
+    p-toastitem {
+      .p-toast-message {
+        max-width: 80vw;
+        margin: 0 0 1rem auto;
+      }
+    }
+  }
+}
+
+.p-tag {
+  margin: 0.2rem 0.2rem !important;
+  padding: 0 0.4rem;
+}
+
+p-dropdown,
+p-fileupload,
+p-multiselect,
+p-inputswitch {
+  line-height: 1.15;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus {
+  box-shadow: none;
+}

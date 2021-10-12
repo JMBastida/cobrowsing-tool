@@ -1,0 +1,22 @@
+@use "../settings/variables";
+
+a:not(.button-link, .p-tabview-nav-link) {
+  color: variables.$text-color-secondary;
+  text-decoration: underline;
+
+  &:hover,
+  &:focus {
+    color: variables.$primary-dark-color;
+  }
+}
+
+a.button-link {
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    background: variables.$primary-dark-color;
+    color: variables.$primary-color-text;
+    border-color: variables.$primary-dark-color;
+  }
+}

@@ -1,0 +1,104 @@
+@use 'variables' as var;
+
+shr-dashboard {
+  .shr-dashboard {
+    .greetings {
+      font-size: 1.75rem;
+      margin: 12px;
+    }
+
+    .message {
+      margin-top: 48px;
+      margin-bottom: 48px;
+    }
+
+    .profile-progress {
+      .top {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+        align-items: center;
+        justify-content: space-between;
+
+        .text-content {
+          display: flex;
+          align-items: center;
+
+          .icon {
+            margin-right: 24px;
+            color: var.$color-yellow;
+          }
+        }
+
+        .button-green {
+          background-color: var.$color-green;
+          border-color: var.$color-green;
+
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+      }
+
+      .p-progressbar {
+        max-width: 80%;
+        margin: 0 auto;
+
+        .p-progressbar-value {
+          border-radius: 6px;
+          background-color: var.$color-green;
+        }
+
+        .p-progressbar-label {
+          color: var.$color-white;
+        }
+      }
+    }
+
+    .options {
+      gap: 12px;
+      margin: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      justify-content: center;
+
+      @media screen and (min-width: 769px) {
+        justify-content: start;
+      }
+
+      .option {
+        width: 100%;
+        padding: 24px;
+        max-width: 200px;
+        text-align: center;
+        border-radius: 24px;
+        border: 5px solid var.$color-background-b;
+
+        @media screen and (min-width: 769px) {
+          background-color: var.$color-white;
+        }
+
+        &:hover {
+          background-color: var.$color-status-b-lighter;
+          box-shadow: 0px 10px 40px rgba(41, 50, 65, 0.06);
+        }
+
+        .icon {
+          font-size: 3rem;
+          margin-bottom: 2rem;
+
+          .svg {
+            width: 3rem;
+            height: 3rem;
+          }
+        }
+
+        .label {
+          font-size: 1.5rem;
+          line-height: 1;
+        }
+      }
+    }
+  }
+}

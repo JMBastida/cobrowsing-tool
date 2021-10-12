@@ -1,0 +1,38 @@
+{
+  "PORT": 3001,
+  "ENVIRONMENT": "DEVELOPMENT",
+  "APP_URL": "http://localhost:4200",
+  "API_BASE_URL": "http://localhost:3001",
+  "FONTS_FOLDER": "./public/fonts",
+  "DEFAULT_LANGUAGE": "en",
+  "DEFAULT_MAX_USERS": 10,
+  "DEFAULT_EMAIL": "samuel@sideby.io",
+  "COBROWSING_APP_ID": "COBROWSING_APP_ID",
+  "AGORA_APP_ID": "31418e744b9e4da6aace0d0d5ca0d72c",
+  "DEFAULT_USER_IMG": "http://localhost:3001/public/media/default-user-img.png",
+  "DATABASE": {
+    "MANAGEMENT_DB": "nectardb",
+    "URL": "mongodb://localhost:27017"
+  },
+  "AUTH": {
+    "APISECRET": "nectarsecret",
+    "TOKEN_OPTIONS": {
+      "expiresIn": 31536000
+    }
+  },
+  "OAUTH": {
+    "FROM": "'Hello' <hello@vidiwise.com>",
+    "USER": "hello@vidiwise.com",
+    "CLIENT_ID": "755868880065-peic05jq94igqm89ut41f6cvnh1hmqi6.apps.googleusercontent.com",
+    "CLIENT_SECRET": "odzjadr-U0SvReMbVBJAwiMk",
+    "REFRESH_TOKEN": "1//04Krl54gzrECJCgYIARAAGAQSNwF-L9IrdXiUVuoAyRpu3ubkb1eCMsyX84gVTwdhuC7eJ362wJ5GUjUSmftZF8VcCjsOyVGyq8o"
+  },
+  "MAILJET": {
+    "APIKEY_PUBLIC": "984fd2abe55a01cc98853fbb405fcaae",
+    "APIKEY_PRIVATE": "b812b8fda67450381c8027015a60c477",
+    "FROM": {
+      "NAME": "Vidiwise",
+      "EMAIL": "hello@vidiwise.com"
+    }
+  }
+}

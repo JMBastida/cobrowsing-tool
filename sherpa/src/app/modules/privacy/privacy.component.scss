@@ -1,0 +1,45 @@
+@use 'variables' as var;
+
+shr-privacy {
+  .shr-privacy {
+    a {
+      text-decoration: none;
+      color: var.$color-black;
+      word-break: break-word;
+    }
+
+    .topContent {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      justify-content: center;
+      color: var.$color-white;
+
+      .company {
+        gap: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .miniature {
+          width: 25px;
+        }
+
+        .brand-name {
+          width: 150px;
+        }
+      }
+    }
+
+    .textContent {
+      padding: 12px;
+      margin: 0 auto;
+      max-width: 1200px;
+      text-align: justify;
+
+      .text {
+        margin-bottom: 12px;
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "userId": {
+    "type": "reference",
+    "schema": "user"
+  },
+  "entityId": {
+    "type": "reference",
+    "schema": "entity"
+  },
+  "ip": {
+    "type": "string"
+  },
+  "type": {
+    "type": "string",
+    "values": [
+      "ACCESS",
+      "AVAILABLE",
+      "UNAVAILABLE",
+      "CALL_MISSED",
+      "CALL_DECLINED",
+      "CALL_ACCEPTED",
+      "CALL_FINISHED",
+      "CALL_REQUESTED",
+      "USER_DISCONNECTED",
+      "CALL_FINISHED_FORCED",
+      "USER_DISCONNECTED_ON_CALL",
+      "CLIENT_DISCONNECTED_ON_CALL"
+    ]
+  },
+  "creationDate": {
+    "type": "date"
+  },
+  "modificationDate": {
+    "type": "date"
+  }
+}

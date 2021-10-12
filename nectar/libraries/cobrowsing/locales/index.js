@@ -1,0 +1,51 @@
+var es = {
+  ACCEPT: 'Aceptar',
+  AGENT_BUSY: 'El agente no puede acceder a tu sesión ahora.',
+  ALLOW: 'Permitir',
+  CALL_REQUEST: 'está llamándole.',
+  CLOSE: 'Cerrar',
+  CO_BROWSING: 'Estáis navegando juntos',
+  CO_BROWSING_END_1: 'La sesión ha terminado.',
+  CO_BROWSING_END_2: 'El agent ya no puede acceder a tu navegador.',
+  DEFAULT_AGENT_NAME: 'Agente',
+  DONT_ALLOW: 'No, gracias',
+  HELP: 'Obtén ayuda ahora de nuestro equipo',
+  HELP_PIN_TEXT: 'Comparte este código con el agente',
+  OUR_TEAM: 'Nuestro equipo',
+  PERMISION_1: 'El agente solo podrá acceder a esta pestaña.',
+  PERMISION_2: 'Tu conexión es segura y privada.',
+  PERMISION_3: 'La información sensible no se muestra al agente.',
+  POWERED_BY: 'powered by',
+  REQUEST_TEXT: 'está pidiendo acceder a su ventana para ayudarle',
+  SMART_LINK_TEXT_1: 'El agente se unirá pronto.',
+  SMART_LINK_TEXT_2: 'Tendrás que permitirle acceder a tu sesión.',
+  SOMEONE: 'Un agente',
+};
+
+var en = {
+  ACCEPT: 'Accept',
+  AGENT_BUSY: 'The agent can\'t join your session now.',
+  ALLOW: 'Allow access',
+  CALL_REQUEST: 'is calling you.',
+  CLOSE: 'OK',
+  CO_BROWSING: 'You\'re now browsing together',
+  CO_BROWSING_END_1: 'The session has ended.',
+  CO_BROWSING_END_2: 'The agent can\'t longer access your browser.',
+  DEFAULT_AGENT_NAME: 'Agent',
+  DONT_ALLOW: 'No, thanks',
+  HELP: 'Get instant help from our team',
+  HELP_PIN_TEXT: 'Share this code with the support agent',
+  OUR_TEAM: 'Our support team',
+  PERMISION_1: 'The agent only has access to this tab',
+  PERMISION_2: 'Your connection is secure and private',
+  PERMISION_3: 'All sensitive information will be hidden',
+  POWERED_BY: 'powered by',
+  REQUEST_TEXT: 'is asking permission to browse together with you',
+  SMART_LINK_TEXT_1: 'Someone will join soon.',
+  SMART_LINK_TEXT_2: 'You will need to allow them to enter your session.',
+  SOMEONE: 'An agent',
+};
+
+var defaultLanguage = 'en';
+
+module.exports = { es, en, defaultLanguage };

@@ -1,0 +1,26 @@
+{
+  "companyName": {
+    "type": "string"
+  },
+  "companySite": {
+    "type": "string"
+  },
+  "companyEmail": {
+    "type": "string"
+  },
+  "isWidgetEnabled": {
+    "type": "boolean"
+  },
+  "logoUrl": {
+    "type": "string"
+  },
+  "companyPhone": {
+    "type": "string"
+  },
+  "creationDate": {
+    "type": "date"
+  },
+  "modificationDate": {
+    "type": "date"
+  }
+}

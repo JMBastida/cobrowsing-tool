@@ -1,0 +1,10 @@
+{
+  "apps": [
+    {
+      "name": "nectar",
+      "script": "./app.js",
+      "error_file": "/workspace/logs/nectar/errors.txt",
+      "out_file": "/workspace/logs/nectar/out.txt"
+    }
+  ]
+}

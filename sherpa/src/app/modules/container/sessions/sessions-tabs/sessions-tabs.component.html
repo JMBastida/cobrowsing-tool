@@ -1,0 +1,11 @@
+<div *ngIf="selectedSessionId" class="shr-sessions-tabs-view">
+    <div class="tabs">
+        <article class="tab" [ngClass]="{'active': session.isInTab, 'selected': session._id === selectedSessionId }" *ngFor="let session of sessions" (click)="toggleTab(session)">
+            <div class="tab-box" pTooltip="URL: {{session.locations[session.locations.length - 1]}}" tooltipPosition="bottom" tooltipEvent="hover" [showDelay]="1000">
+                <img [src]="setIconToSession(session)"
+                    [ngClass]="{'filter-white': session._id === selectedSessionId && !isSpecialIcon(session),'special-icon': isSpecialIcon(session)}" />
+                <span>{{getLocationPath(session)}}</span>
+            </div>
+        </article>
+    </div>
+</div>

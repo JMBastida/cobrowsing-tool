@@ -1,0 +1,17 @@
+{
+  "inactiveTime": {
+    "type": "boolean"
+  },
+  "isConnectionWithoutAgentsValidationActive": {
+    "type": "boolean"
+  },
+  "maxSocketConnections": {
+    "type": "number"
+  },
+  "creationDate": {
+    "type": "date"
+  },
+  "modificationDate": {
+    "type": "date"
+  }
+}

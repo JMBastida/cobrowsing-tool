@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">
+  <title>Demo access</title>
+  <style type="text/css">
+    div,
+    p,
+    a,
+    li,
+    td {
+      -webkit-text-size-adjust: none;
+    }
+
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .ReadMsgBody {
+      width: 100%;
+      background-color: #FFFFFF;
+    }
+
+    .ExternalClass {
+      width: 100%;
+      background-color: #FFFFFF;
+    }
+
+    body {
+      width: 100%;
+      height: 100%;
+      background-color: #FFFFFF;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html {
+      width: 100%;
+      background-color: #FFFFFF;
+    }
+
+    @font-face {
+      font-family: 'proxima_novalight';
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-light-webfont.eot');
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-light-webfont.eot?#iefix') format('embedded-opentype'), url('http://rocketway.net/themebuilder/products/font/proximanova-light-webfont.woff') format('woff'), url('http://rocketway.net/themebuilder/products/font/proximanova-light-webfont.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'proxima_nova_rgregular';
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-regular-webfont.eot');
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-regular-webfont.eot?#iefix') format('embedded-opentype'), url('http://rocketway.net/themebuilder/products/font/proximanova-regular-webfont.woff') format('woff'), url('http://rocketway.net/themebuilder/products/font/proximanova-regular-webfont.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'proxima_novasemibold';
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-semibold-webfont.eot');
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-semibold-webfont.eot?#iefix') format('embedded-opentype'), url('http://rocketway.net/themebuilder/products/font/proximanova-semibold-webfont.woff') format('woff'), url('http://rocketway.net/themebuilder/products/font/proximanova-semibold-webfont.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'proxima_nova_rgbold';
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-bold-webfont.eot');
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-bold-webfont.eot?#iefix') format('embedded-opentype'), url('http://rocketway.net/themebuilder/products/font/proximanova-bold-webfont.woff') format('woff'), url('http://rocketway.net/themebuilder/products/font/proximanova-bold-webfont.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'proxima_novathin';
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-thin-webfont.eot');
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-thin-webfont.eot?#iefix') format('embedded-opentype'), url('http://rocketway.net/themebuilder/products/font/proximanova-thin-webfont.woff') format('woff'), url('http://rocketway.net/themebuilder/products/font/proximanova-thin-webfont.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'proxima_novaextrabold';
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-extrabold-webfont.eot');
+      src: url('http://rocketway.net/themebuilder/products/font/proximanova-extrabold-webfont.eot?#iefix') format('embedded-opentype'), url('http://rocketway.net/themebuilder/products/font/proximanova-extrabold-webfont.woff2') format('woff2'), url('http://rocketway.net/themebuilder/products/font/proximanova-extrabold-webfont.woff') format('woff'), url('http://rocketway.net/themebuilder/products/font/proximanova-extrabold-webfont.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    p {
+      padding: 0 !important;
+      margin-top: 0 !important;
+      margin-right: 0 !important;
+      margin-bottom: 0 !important;
+      margin-left: 0 !important;
+    }
+
+    .hover:hover {
+      opacity: 0.85;
+      filter: alpha(opacity=85);
+    }
+
+    .image73 img {
+      width: 73px;
+      height: auto;
+    }
+
+    .image42 img {
+      width: 42px;
+      height: auto;
+    }
+
+    .image400 img {
+      width: 400px;
+      height: auto;
+    }
+
+    .icon49 img {
+      width: 49px;
+      height: auto;
+    }
+
+    .image113 img {
+      width: 113px;
+      height: auto;
+    }
+
+    .image70 img {
+      width: 70px;
+      height: auto;
+    }
+
+    .image67 img {
+      width: 67px;
+      height: auto;
+    }
+
+    .image80 img {
+      width: 80px;
+      height: auto;
+    }
+
+    .image35 img {
+      width: 35px;
+      height: auto;
+    }
+
+    .icon49 img {
+      width: 49px;
+      height: auto;
+    }
+  </style>
+  <style type="text/css">
+    @media only screen and (max-width: 479px) {
+      body {
+        width: auto !important;
+      }
+
+      table[class=full] {
+        width: 100% !important;
+        clear: both;
+      }
+
+      table[class=mobile] {
+        width: 100% !important;
+        padding-left: 30px;
+        padding-right: 30px;
+        clear: both;
+      }
+
+      table[class=fullCenter] {
+        width: 100% !important;
+        text-align: center !important;
+        clear: both;
+      }
+
+      td[class=fullCenter] {
+        width: 100% !important;
+        text-align: center !important;
+        clear: both;
+      }
+
+      *[class=erase] {
+        display: none;
+      }
+
+      *[class=buttonScale] {
+        float: none !important;
+        text-align: center !important;
+        display: inline-block !important;
+        clear: both;
+      }
+
+      .image400 img {
+        width: 100% !important;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ui-sortable" id="sort_them">
+    <table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" class="full" bgcolor="#f2f4f9"
+      style="background-color: rgb(242, 244, 249); position: relative; left: 0px; top: 0px;">
+      <tbody>
+        <tr>
+          <td align="center">
+
+
+            <!-- Mobile Wrapper -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" class="mobile">
+              <tbody>
+                <tr>
+                  <td width="100%" height="100" align="center">
+
+                    <!-- Space -->
+                    <table width="400" border="0" cellpadding="0" cellspacing="0" align="center" class="full"
+                      object="drag-module-small">
+                      <tbody>
+                        <tr>
+                          <td width="100%" height="50"></td>
+                        </tr>
+                      </tbody>
+                    </table><!-- End Space -->
+
+                    <!-- Space -->
+                    <table width="400" border="0" cellpadding="0" cellspacing="0" align="center" class="full"
+                      object="drag-module-small">
+                      <tbody>
+                        <tr>
+                          <td width="100%" height="50"></td>
+                        </tr>
+                      </tbody>
+                    </table><!-- End Space -->
+
+                    <!-- Shadow -->
+                    <table width="400" border="0" cellpadding="0" cellspacing="0" align="center" class="full"
+                      style="-webkit-border-radius: 6px; -moz-border-radius: 6px; border-radius: 6px;">
+                      <tbody>
+                        <tr>
+                          <td width="100%"
+                            style="-webkit-border-radius: 6px; -moz-border-radius: 6px; border-radius: 6px; -webkit-box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75); -moz-box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.75); box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.10);"
+                            bgcolor="#ffffff">
+
+                            <!-- SORTABLE -->
+                            <div class="sortable_inner ui-sortable">
+                              <!-- Start Top -->
+                              <table width="400" border="0" cellpadding="0" cellspacing="0" align="center"
+                                class="mobile" bgcolor="#393a34"
+                                style="background: linear-gradient(to top right, #6425c2 0%, #2952d6 100%); background-size: cover; background-position: center center; background-repeat: no-repeat; border-top-right-radius: 6px; border-top-left-radius: 6px;"
+                                object="drag-module-small" id="not1ChangeBG">
+                                <tbody>
+                                  <tr>
+                                    <td width="100%" valign="middle" align="center">
+
+                                      <!-- Header Text -->
+                                      <table width="300" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        style="text-align: center; border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"
+                                        class="fullCenter">
+                                        <tbody>
+                                          <tr>
+                                            <td width="100%" height="35"></td>
+                                          </tr>
+                                          <tr>
+                                            <td valign="middle" width="100%"
+                                              style="text-align: center; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 21px; color: #ffffff; line-height: 30px; font-weight: 600;"
+                                              class="fullCenter" cu-identify="element_048575490722981574">
+                                              ¡Acceso a tu demo!</td>
+                                          </tr>
+                                          <tr>
+                                            <td width="100%" height="20" style="font-size: 1px; line-height: 1px;">
+                                              &nbsp;</td>
+                                          </tr>
+                                          <tr>
+                                            <td width="100%" class="image73">
+                                              <img
+                                                src="https://www.vidiwise.com/wp-content/uploads/2021/04/light-bg.svg"
+                                                width="73" alt="" border="0" cu-identify="element_020227972532007144">
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td width="100%" height="35" style="font-size: 1px; line-height: 1px;">
+                                              &nbsp;</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                              <table width="400" border="0" cellpadding="0" cellspacing="0" align="center"
+                                class="mobile" bgcolor="#ffffff" object="drag-module-small">
+                                <tbody>
+                                  <tr>
+                                    <td width="100%" valign="middle" align="center">
+
+                                      <table width="300" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        style="text-align: center; border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"
+                                        class="fullCenter">
+                                        <tbody>
+                                          <tr>
+                                            <td width="100%" height="40"></td>
+                                          </tr>
+                                          <tr>
+                                            <td valign="middle" width="100%"
+                                              style="text-align: center; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 36px; color: #323232; line-height: 40px; font-weight: 100;"
+                                              class="fullCenter" cu-identify="element_036710231222639567">
+                                              <singleline style="font-size: x-large; font-weight: bold;">
+                                                ¡Bienvenid{{genderLetter}} a
+                                                Vidiwise, {{name}}!</singleline>
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <div style="display: none;" id="element_05332981246818522"></div>
+                              <table width="400" border="0" cellpadding="0" cellspacing="0" align="center"
+                                class="mobile" bgcolor="#ffffff" object="drag-module-small"
+                                style="position: relative; left: 0px; top: 0px;">
+                                <tbody>
+                                  <tr>
+                                    <td width="100%" valign="middle" align="center">
+
+                                      <table width="300" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        style="text-align: center; border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"
+                                        class="fullCenter">
+                                        <tbody>
+                                          <tr>
+                                            <td width="100%" height="40"></td>
+                                          </tr>
+                                          <tr>
+                                            <td valign="middle" width="100%"
+                                              style="text-align: center; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 36px; color: #323232; line-height: 25px; font-weight: 100;"
+                                              class="fullCenter" cu-identify="element_02890807444644419">
+                                              <p style="text-align: justify;"><span style="font-size: 14px;">Al entrar
+                                                  podrás ver e interactuar con todas las funcionalidades de la
+                                                  aplicación. Y hacer uso de todo libremente.</span></p>
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                              <table width="400" border="0" cellpadding="0" cellspacing="0" align="center"
+                                class="mobile" bgcolor="#ffffff" object="drag-module-small">
+                                <tbody>
+                                  <tr>
+                                    <td width="100%" valign="middle" align="center">
+
+                                      <table width="300" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        style="text-align: center; border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"
+                                        class="fullCenter">
+                                        <tbody>
+                                          <tr>
+                                            <td width="100%" height="35" style="font-size: 1px; line-height: 1px;">
+                                              &nbsp;</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                              <table width="400" border="0" cellpadding="0" cellspacing="0" align="center"
+                                class="mobile" bgcolor="#ffffff" object="drag-module-small">
+                                <tbody>
+                                  <tr>
+                                    <td width="100%" valign="middle" align="center">
+
+                                      <table width="300" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        style="text-align: center; border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"
+                                        class="fullCenter">
+                                        <!-- Image 42px - 1 -->
+                                        <tbody>
+                                          <tr>
+                                            <td valign="top" width="100%" class="image42">
+
+
+
+
+
+                                              <table width="230" border="0" cellpadding="0" cellspacing="0"
+                                                align="center"
+                                                style="border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; margin: 0 auto;"
+                                                class="full">
+                                                <tbody>
+                                                  <tr>
+                                                    <td valign="middle" width="100%" height="40"
+                                                      style="text-align: center; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #323232; font-size: 15px; font-weight: 600; line-height: 22px;"
+                                                      class="fullCenter" cu-identify="element_06925810804852925">
+                                                      <singleline style="font-weight: bold;">Usuario:</singleline>
+                                                      <div style="font-weight: normal;">{{email}}</div>
+                                                    </td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td width="100%" height="5"
+                                                      style="font-size: 1px; line-height: 1px;">&nbsp;</td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td width="100%" height="15" style="font-size: 1px; line-height: 1px;">
+                                              &nbsp;</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                              <table width="400" border="0" cellpadding="0" cellspacing="0" align="center"
+                                class="mobile" bgcolor="#ffffff" object="drag-module-small">
+                                <tbody>
+                                  <tr>
+                                    <td width="100%" valign="middle" align="center">
+
+                                      <table width="300" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        style="text-align: center; border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"
+                                        class="fullCenter">
+                                        <!-- Image 42px - 2 -->
+                                        <tbody>
+                                          <tr>
+                                            <td valign="top" width="100%" class="image42">
+
+
+
+
+
+                                              <table width="230" border="0" cellpadding="0" cellspacing="0"
+                                                align="center"
+                                                style="border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; margin: 0 auto;"
+                                                class="full">
+                                                <tbody>
+                                                  <tr>
+                                                    <td valign="middle" width="100%" height="40"
+                                                      style="text-align: center; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #323232; font-size: 15px; font-weight: 600; line-height: 22px;"
+                                                      class="fullCenter" cu-identify="element_04799712404665679">
+                                                      <singleline style="font-weight: bold;">Contraseña:</singleline>
+                                                      <div style="font-weight: normal;">{{password}}</div>
+                                                    </td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td width="100%" height="5"
+                                                      style="font-size: 1px; line-height: 1px;">&nbsp;</td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td width="100%" height="15" style="font-size: 1px; line-height: 1px;">
+                                              &nbsp;</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                              <div style="display: none;" id="element_06385906231177094"></div>
+                              <div style="display: none;" id="element_07006631575600992"></div>
+
+                              <table width="400" border="0" cellpadding="0" cellspacing="0" align="center"
+                                class="mobile" bgcolor="#ffffff" object="drag-module-small"
+                                style="position: relative; left: 0px; top: 0px;">
+                                <tbody>
+                                  <tr>
+                                    <td width="100%" valign="middle" align="center">
+
+                                      <table width="300" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        style="text-align: center; border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"
+                                        class="fullCenter">
+                                        <tbody>
+                                          <tr>
+                                            <td width="100%" align="center">
+                                              <table border="0" cellpadding="0" cellspacing="0" align="center"
+                                                class="buttonScale">
+                                                <tbody>
+                                                  <tr>
+                                                    <td align="center" height="40" bgcolor="#94da43"
+                                                      style="border-radius: 25px; font-family: Open Sans, Helvetica, Arial, sans-serif; color: rgb(255, 255, 255); font-size: 13px; font-weight: 700; line-height: 1px; background-color: rgb(100, 37, 194);">
+
+                                                      <a href="https://app.vidiwise.com/login?o=e"
+                                                        style="color: #ffffff; text-decoration: none; width: 100%; padding: 13px 25px; border-radius: 25px;"
+                                                        cu-identify="element_038588532700658984">¡Ir a la demo!</a>
+
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                              <table width="400" border="0" cellpadding="0" cellspacing="0" align="center"
+                                class="mobile" bgcolor="#ffffff" object="drag-module-small"
+                                style="position: relative; left: 0px; top: 0px;">
+                                <tbody>
+                                  <tr>
+                                    <td width="100%" valign="middle" align="center">
+
+                                      <table width="300" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        style="text-align: center; border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"
+                                        class="fullCenter">
+                                        <tbody>
+                                          <tr>
+                                            <td width="100%" height="40"></td>
+                                          </tr>
+                                          <tr>
+                                            <td valign="middle" width="100%"
+                                              style="text-align: center; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 36px; color: #323232; line-height: 25px; font-weight: 100;"
+                                              class="fullCenter" cu-identify="element_07579383165427926">
+                                              <div style="text-align: center;"><span style="font-size: small;"><span
+                                                    style="color: rgb(29, 28, 29); font-family: Slack-Lato, appleLogo, sans-serif; font-variant-ligatures: common-ligatures; background-color: rgb(255, 255, 255);">o
+                                                    copiando el siguiente enlace en tu navegador:&nbsp;</span><a
+                                                    target="_blank" class="c-link"
+                                                    data-stringify-link="https://app.vidiwise.com/login?o=e" delay="150"
+                                                    data-sk="tooltip_parent" href="https://app.vidiwise.com/login?o=e"
+                                                    rel="noopener noreferrer"
+                                                    style="box-sizing: inherit; text-decoration-line: none; font-family: Slack-Lato, appleLogo, sans-serif; font-variant-ligatures: common-ligatures; background-color: rgb(255, 255, 255);">https://app.vidiwise.com</a></span>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <table width="400" border="0" cellpadding="0" cellspacing="0" align="center"
+                                class="mobile" bgcolor="#ffffff" object="drag-module-small"
+                                style="-webkit-border-bottom-right-radius: 6px; -moz-border-bottom-right-radius: 6px; border-bottom-right-radius: 6px; -webkit-border-bottom-left-radius: 6px; -moz-border-bottom-left-radius: 6px; border-bottom-left-radius: 6px;">
+                                <tbody>
+                                  <tr>
+                                    <td width="100%" valign="middle" align="center">
+
+                                      <table width="300" border="0" cellpadding="0" cellspacing="0" align="center"
+                                        style="text-align: center; border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"
+                                        class="fullCenter">
+                                        <tbody>
+                                          <tr>
+                                            <td width="100%" height="50" style="font-size: 1px; line-height: 1px;">
+                                              &nbsp;</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+
+
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table><!-- End Shadow -->
+
+
+                    <!-- CopyRight -->
+                    <table width="352" border="0" cellpadding="0" cellspacing="0" align="center" class="full"
+                      object="drag-module-small">
+                      <tbody>
+                        <tr>
+                          <td width="100%" height="25" style="font-size: 1px; line-height: 1px;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <td valign="middle" width="100%"
+                            style="text-align: center; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #a5a8ae; font-size: 8px; font-weight: 200; line-height: 18px;"
+                            class="fullCenter" cu-identify="element_0858030408977686"><i data-stringify-type="italic"
+                              style="box-sizing: inherit; color: rgb(29, 28, 29); font-family: Slack-Lato, appleLogo, sans-serif; font-size: 10px; font-variant-ligatures: common-ligatures;">Copyright
+                              Vidiwise © 2021. All rights reserved.</i><br
+                              style="box-sizing: inherit; color: rgb(29, 28, 29); font-family: Slack-Lato, appleLogo, sans-serif; font-size: 15px; font-variant-ligatures: common-ligatures; background-color: rgb(255, 255, 255);"><span
+                              style="color: rgb(29, 28, 29); font-family: Slack-Lato, appleLogo, sans-serif; font-size: 10px; font-variant-ligatures: common-ligatures;">Carrer
+                              de Ribera, 1, Puerta 2, 46002. Valencia,&nbsp;Spain</span><br
+                              style="box-sizing: inherit; color: rgb(29, 28, 29); font-family: Slack-Lato, appleLogo, sans-serif; font-size: 15px; font-variant-ligatures: common-ligatures; background-color: rgb(255, 255, 255);"><span
+                              style="color: rgb(29, 28, 29); font-family: Slack-Lato, appleLogo, sans-serif; font-size: 10px; font-variant-ligatures: common-ligatures;">Síguenos
+                              en&nbsp;</span><a target="_blank" class="c-link"
+                              data-stringify-link="https://www.linkedin.com/company/69008305/admin/" delay="150"
+                              data-sk="tooltip_parent" href="https://www.linkedin.com/company/69008305/admin/"
+                              rel="noopener noreferrer"
+                              style="box-sizing: inherit; text-decoration-line: none; font-family: Slack-Lato, appleLogo, sans-serif; font-size: 10px; font-variant-ligatures: common-ligatures;">LinkedIn</a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div style="display: none" id="element_07424959477270625"></div>
+                    <div style="display: none" id="element_05926898026051215"></div>
+
+
+
+                    <table width="352" border="0" cellpadding="0" cellspacing="0" align="center" class="full"
+                      object="drag-module-small">
+                      <tbody>
+                        <tr>
+                          <td width="100%" height="60" style="font-size: 1px; line-height: 1px;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <td width="100%" height="1" style="font-size: 1px; line-height: 1px;">&nbsp;</td>
+                        </tr>
+                      </tbody>
+                    </table><!-- End CopyRight -->
+
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+
+</html>

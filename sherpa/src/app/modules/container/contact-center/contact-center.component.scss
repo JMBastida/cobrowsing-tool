@@ -1,0 +1,30 @@
+@use 'variables' as var;
+
+shr-contact-center {
+  .shr-contact-center {
+    .title {
+      padding: 6px;
+      margin: 12px;
+      text-align: center;
+      background-color: var.$color-background-a;
+    }
+
+    .text {
+      font-size: 1rem;
+    }
+
+    .navigators {
+      justify-content: start;
+      align-items: center;
+      display: flex;
+      gap: var.$margin-side;
+      flex-flow: wrap row;
+      margin: var.$margin-side-lg 0;
+      .link {
+        cursor: pointer;
+        font-weight: var.$bold-weight;
+        color: var.$primary-color;
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+<div class="shr-contact-center">
+  <h2 class="title">{{'HELP_CENTER.TITLE' | literal: lan}}</h2>
+  <div class="wrapper">
+    <h3 class="bold">{{'HELP_CENTER.FAQS' | literal: lan}}</h3>
+    <div class="text">{{'HELP_CENTER.FAQS_DESCRIPTION' | literal: lan}}</div>
+    <div class="navigators">
+      <a [href]="docsUrl" target="_blank" class="p-button button-link help-center-button">
+        {{'HELP_CENTER.LINK' | literal: lan}}
+      </a>
+      <span *ngIf="isFrogedActive">{{'COMMON.OR' | literal: lan}}</span>
+      <a *ngIf="isFrogedActive" class="p-button button-link" (click)="openChat()">{{'HELP_CENTER.CHAT_LINK' | literal: lan}}</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+{
+  "userId": {
+    "type": "reference"
+  },
+  "type": {
+    "type": "string",
+    "values": [
+      "SETUP",
+      "FEATURES_SUGGESTION",
+      "PRICING",
+      "BUGS",
+      "OTHER"
+    ]
+  },
+  "message": {
+    "type": "string"
+  },
+  "creationDate": {
+    "type": "date"
+  },
+  "modificationDate": {
+    "type": "date"
+  }
+}

@@ -1,0 +1,40 @@
+@use '../settings/variables';
+/* ==========================================================================
+   #TEXT-UTILITIES
+   ========================================================================== */
+
+   .u-text-upper {
+    text-transform: uppercase !important;
+  }
+
+  .u-text-right {
+    text-align: right !important;
+  }
+
+  .u-text-light {
+    font-weight: variables.$light-weight;
+  }
+
+  .u-text-center {
+    text-align: center !important;
+  }
+
+  .u-error {
+    color: variables.$error-color !important;
+  }
+
+  .u-color-dark {
+    color: variables.$text-color !important;
+  }
+
+  .u-pointer {
+    cursor: pointer !important;
+  }
+
+  .u-underline {
+    text-decoration: underline !important;
+  }
+
+  .u-margin-bottom {
+    margin-bottom: 1em !important;
+  }
