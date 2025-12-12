@@ -1,0 +1,21 @@
+@use "../settings/variables";
+
+body {
+  color: variables.$text-color;
+  font-family: variables.$font-family;
+  font-size: variables.$fs-body;
+  line-height: 1.8;
+}
+
+strong {
+  font-weight: variables.$semibold-weight;
+}
+
+em {
+  font-style: italic;
+}
+
+strong em {
+  font-weight: variables.$semibold-weight;
+  font-style: italic;
+}

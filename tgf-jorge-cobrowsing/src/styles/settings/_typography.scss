@@ -1,0 +1,70 @@
+// Weights
+$hairline-weight: 100;
+$thin-weight:     200;
+$light-weight:    300;
+$normal-weight:   400;
+$medium-weight:   500;
+$semibold-weight: 600;
+$bold-weight:     700;
+$xbold-weight:    800;
+$black-weight:    900;
+
+// Include fonts
+@font-face {
+  font-family: "Inter";
+  font-weight: $light-weight;
+  font-style: normal;
+  src: url(../../assets/fonts/inter/Inter-Light.ttf) format("opentype");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-weight: $normal-weight;
+  font-style: normal;
+  src: url(../../assets/fonts/inter/Inter-Regular.ttf) format("opentype");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-weight: $semibold-weight;
+  font-style: normal;
+  src: url(../../assets/fonts/inter/Inter-SemiBold.ttf) format("opentype");
+}
+
+$font-family: "Inter", "Open Sans", sans-serif;
+
+// Typography scale
+$fs-base: 16;
+
+$_fs-9: 9 / $fs-base + rem;
+$_fs-12: 12 / $fs-base + rem;
+$_fs-14: 14 / $fs-base + rem;
+$_fs-17: 17 / $fs-base + rem;
+$_fs-19: 19 / $fs-base + rem;
+$_fs-25: 25 / $fs-base + rem;
+$_fs-33: 33 / $fs-base + rem;
+$_fs-44: 44 / $fs-base + rem;
+
+// Typography applications
+$fs-general-sm: $_fs-12;
+$fs-general: $_fs-14;
+$fs-general-lg: $_fs-25;
+$fs-general-xl: $_fs-33;
+
+$fs-badge: $_fs-12;
+$fs-badge-l: $_fs-17;
+$fs-badge-xl: $_fs-19;
+
+$fs-button: $_fs-12;
+$fs-button-l: $_fs-17;
+$fs-button-xl: $_fs-19;
+
+$fs-check: $_fs-14;
+$fs-btn: $_fs-14;
+$fs-footer: $_fs-14;
+$fs-menu: $_fs-14;
+$fs-body: $_fs-14;
+$fs-lead: $_fs-19;
+$fs-title-s: $_fs-25;
+$fs-title-m: $_fs-33;
+$fs-title-l: $_fs-44;

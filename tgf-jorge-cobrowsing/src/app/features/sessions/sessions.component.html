@@ -1,0 +1,140 @@
+<div class="shr-sessions">
+  <div class="wrapper left">
+    <div class="search">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          placeholder="{{ 'SESSIONS.SEARCH_LOCATION' | literal: lan() }}"
+          [ngModel]="searchString()"
+          (input)="onSearchChange($event)"
+          data-hj-allow
+        />
+      </span>
+    </div>
+    @if (clientsData() && clientsData().length) {
+    <div class="total-sessions">
+      {{ "COMMON.SHOWING" | literal: lan() }} {{ clientsData().length }}
+      {{ "COMMON.OF" | literal: lan() }} {{ totalSessionsString() }}
+      {{ "COMMON.SESSIONS_LC" | literal: lan() }}
+    </div>
+    }
+    <div class="sessions">
+      @if (!clientsData() || !clientsData().length) {
+      <div class="no-sessions">
+        <p>{{ "SESSIONS.NOT_SESSIONS_FOUND" | literal: lan() }}</p>
+        <!-- <button pButton *ngIf="isAdmin() && entity() && !entity().isScriptInstalled" (click)="openInstallationScriptPopup()"
+          label="{{'SESSIONS.SETUP_SIDEBY' | literal: lan() }}"></button> -->
+        <img
+          src="../../../../assets/images/skeleton-sessions-list.png"
+          alt="sessions skeleton"
+        />
+      </div>
+      } @for (clientData of clientsData(); track clientData) {
+      <div>
+        <!-- <app-session-item [clientData]="clientData" (watchSession)="watchSession($event)"
+          [selectedSessionId]="sessionId()"></app-session-item> -->
+      </div>
+      }
+    </div>
+    <!-- <div *ngIf="totalSessions() && totalSessions() > rows()" class="sessions-paginator">
+      <p-paginator [rows]="rows()" [totalRecords]="totalSessions()" [first]="first()" [pageLinkSize]="3"
+        styleClass="{{page() < 2 ? 'hide-first' : ''}} {{page() > pageCount() - 3 ? 'hide-last' : ''}}"
+        (onPageChange)="onPageChange($event)"></p-paginator>
+    </div> -->
+  </div>
+  <div class="wrapper right">
+    <!-- <button *ngIf="hasCalls() && isOnCall()" pButton class="end-call-button p-button-danger p-button-icon-only"
+      (click)="endCall()">
+      <img class="icon" src="../../../../assets/icons/fontawesome/phone-slash-solid-active.svg" />
+    </button> -->
+    @if (sessionId()) {
+    <div class="top-content">
+      <div class="button-content">
+        <!-- <button *ngIf="!isCobrowsing() && !isCobrowsingRequest()"
+          [disabled]="isSomeoneCoBrowsing() || isSomeoneRequesting() || !session() || session().isTabClosed" pButton
+          label="{{'SESSIONS.REQUEST_ACCESS' | literal: lan() }}" (click)="requestAccess()"></button>
+        <button *ngIf="isCobrowsingRequest()" pButton class="p-button-danger p-button-outlined"
+          label="{{'SESSIONS.STOP_CO_BROWSING_REQUEST' | literal: lan() }}" (click)="stopCoBrowsingRequest()"></button>
+        <button *ngIf="isCobrowsing()" pButton class="p-button-danger p-button-outlined"
+          label="{{'SESSIONS.STOP_CO_BROWSING' | literal: lan() }}" (click)="stopCoBrowsing()"></button>
+        <button *ngIf="!isCobrowsing() && !isCobrowsingRequest()" pButton class="p-button-danger p-button-outlined"
+          label="{{'SESSIONS.LEAVE_SESSION' | literal: lan() }}" (click)="stopWatching()"></button>
+        <button *ngIf="hasCalls() && !isOnCall() && !isClientOnCall()" pButton class="p-button-info start-call-button"
+          label="{{'SESSIONS.START_CALL' | literal: lan() }}" (click)="startCall()"></button>
+        <button *ngIf="hasCalls() && !isOnCall() && isClientOnCall()" pButton class="p-button-info join-call-button"
+          label="{{'SESSIONS.JOIN_CLIENT_CALL' | literal: lan() }}" (click)="joinClientCall()"></button>
+        <button *ngIf="hasCalls() && isOnCall() && !isClientOnCall()" pButton class="p-button-info recall-call-button"
+          label="{{'SESSIONS.RECALL' | literal: lan() }}" (click)="reCall()"></button> -->
+      </div>
+      <input
+        pInputText
+        class="name-input"
+        placeholder="{{ 'SESSIONS.CLIENT_SESSION_NAME' | literal: lan() }}"
+        [(ngModel)]="clientName"
+        (change)="onNameChange()"
+        data-hj-allow
+      />
+    </div>
+    } @if (!sessionId()) {
+    <div class="user-screen-placeholder">
+      <p>{{ "SESSIONS.USER_SCREEN_PLACEHOLDER" | literal: lan() }}</p>
+      <img
+        src="../../../../assets/images/placeholder-userscreen.svg"
+        alt="user screen placeholder"
+      />
+    </div>
+    }
+    <!-- <app-sessions-tabs-view *ngIf="sessionId()" [sessions]="currentClientDataSessions()" [selectedSessionId]="sessionId()" (watchSession)="watchSession($event)"></app-sessions-tabs-view> -->
+    @if (session() && currentClientDataSessions()) {
+    <div class="url-container">
+      <p-select
+        #sessions_select
+        [options]="currentClientDataSessions()"
+        [(ngModel)]="selectedSession"
+        [showClear]="false"
+        placeholder="URL"
+      >
+        <ng-template pTemplate="selectedItem">
+          <div class="country-item country-item-value" *ngIf="selectedSession()">
+            <div>
+              {{ session().locations[session().locations.length - 1] }}
+            </div>
+          </div>
+        </ng-template>
+        <ng-template let-currentSession pTemplate="item">
+          <div class="current-session-item">
+            <div>
+              {{ currentSession.locations[session().locations.length - 1] }}
+            </div>
+          </div>
+        </ng-template>
+      </p-select>
+      <!--<input pInputText [(ngModel)]="session.locations[session.locations.length - 1]">-->
+      <!-- <p-toggleButton [(ngModel)]="isSelectExpanded" (click)="selectedSessionFromDropdown()" onIcon="pi pi-angle-down" offIcon="pi pi-angle-up"></p-toggleButton> -->
+    </div>
+    } @if (session() && currentClientDataSessions()) {
+    <div
+      class="screen-container"
+      [ngClass]="{ 'pointer-forbidden': !isCobrowsing() }"
+    >
+      <!-- <div #clientCursor class="client-cursor">
+          <svg *ngIf="sessionId()" id="client-cursor-svg" width="21" height="27" viewBox="0 0 21 27" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            </svg>
+          <span *ngIf="sessionId() && clientName()" class="cursor-name">{{clientName()}}</span>
+      </div> -->
+      <!-- <div #agentCursor class="agent-cursor">
+          <svg width="21" height="26" viewBox="0 0 21 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            </svg>
+          <span class="cursor-name">{{coBrowsingAgent() ? coBrowsingAgent().name : ''}}</span>
+      </div> -->
+      <div class="view-container">
+        <!-- <iframe #screen class="iframe" [ngClass]="{'no-border': isCobrowsing()}"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-presentation" (load)="onLoadIframe()"></iframe> -->
+      </div>
+    </div>
+    }
+  </div>
+</div>

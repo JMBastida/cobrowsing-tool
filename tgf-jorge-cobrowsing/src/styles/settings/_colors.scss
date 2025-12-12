@@ -1,0 +1,208 @@
+//Rainbow Colors
+$_blue-50: #f4fafe;
+$_blue-100: #cae6fc;
+$_blue-200: #a0d2fa;
+$_blue-300: #75bef8;
+$_blue-400: #4baaf5;
+$_blue-500: #2196f3;
+$_blue-600: #0288D1;
+$_blue-700: #1769aa;
+$_blue-800: #125386;
+$_blue-900: #0d3c61;
+$_green-50: #f7faf5;
+$_green-100: #dbe8cf;
+$_green-200: #bed6a9;
+$_green-300: #a1c384;
+$_green-400: #85b15e;
+$_green-500: #689f38;
+$_green-600: #588730;
+$_green-700: #496f27;
+$_green-800: #39571f;
+$_green-900: #2a4016;
+$_yellow-50: #fffcf5;
+$_yellow-100: #fef0cd;
+$_yellow-200: #fde4a5;
+$_yellow-300: #fdd87d;
+$_yellow-400: #fccc55;
+$_yellow-500: #fbc02d;
+$_yellow-600: #d5a326;
+$_yellow-700: #b08620;
+$_yellow-800: #8a6a19;
+$_yellow-900: #644d12;
+$_cyan-50: #f2fcfd;
+$_cyan-100: #c2eff5;
+$_cyan-200: #91e2ed;
+$_cyan-300: #61d5e4;
+$_cyan-400: #30c9dc;
+$_cyan-500: #00bcd4;
+$_cyan-600: #00a0b4;
+$_cyan-700: #008494;
+$_cyan-800: #006775;
+$_cyan-900: #004b55;
+$_pink-50: #fef4f7;
+$_pink-100: #fac9da;
+$_pink-200: #f69ebc;
+$_pink-300: #f1749e;
+$_pink-400: #ed4981;
+$_pink-500: #e91e63;
+$_pink-600: #c61a54;
+$_pink-700: #a31545;
+$_pink-800: #801136;
+$_pink-900: #5d0c28;
+$_indigo-50: #f6f7fc;
+$_indigo-100: #d5d9ef;
+$_indigo-200: #b3bae2;
+$_indigo-300: #919cd5;
+$_indigo-400: #707dc8;
+$_indigo-500: #4e5fbb;
+$_indigo-600: #42519f;
+$_indigo-700: #374383;
+$_indigo-800: #2b3467;
+$_indigo-900: #1f264b;
+$_teal-50: #f2faf9;
+$_teal-100: #c2e6e2;
+$_teal-200: #91d2cc;
+$_teal-300: #61beb5;
+$_teal-400: #30aa9f;
+$_teal-500: #009688;
+$_teal-600: #008074;
+$_teal-700: #00695f;
+$_teal-800: #00534b;
+$_teal-900: #003c36;
+$_orange-50: #fffaf2;
+$_orange-100: #ffe6c2;
+$_orange-200: #ffd391;
+$_orange-300: #ffbf61;
+$_orange-400: #ffac30;
+$_orange-500: #ff9800;
+$_orange-600: #d98100;
+$_orange-700: #b36a00;
+$_orange-800: #8c5400;
+$_orange-900: #663d00;
+$_bluegray-50: #f7f9f9;
+$_bluegray-100: #d9e0e3;
+$_bluegray-200: #bbc7cd;
+$_bluegray-300: #9caeb7;
+$_bluegray-400: #7e96a1;
+$_bluegray-500: #607d8b;
+$_bluegray-600: #526a76;
+$_bluegray-700: #435861;
+$_bluegray-800: #35454c;
+$_bluegray-900: #263238;
+$_purple-50: #faf4fb;
+$_purple-100: #e7cbec;
+$_purple-200: #d4a2dd;
+$_purple-300: #c279ce;
+$_purple-400: #af50bf;
+$_purple-500: #9c27b0;
+$_purple-600: #852196;
+$_purple-700: #6d1b7b;
+$_purple-800: #561561;
+$_purple-900: #3e1046;
+$_white: #FFFFFF;
+$_black: #000000;
+
+//Colors PrimeNg
+$_white-solid: rgba(255, 255, 255); // #FFFFFF PrimeNg
+$_alabaster-solid: rgba(250, 250, 250); // #FAFAFA PrimeNg
+$_gallery-solid: rgba(239, 239, 239); // #EFEFEF
+$_gallery: rgba(236, 236, 236); // #ECECEC PrimeNg
+
+$_red-solid: rgba(255, 0, 0); // #FF0000
+$_monza-solid: rgba(199, 3, 30); // #C7031E
+$_monza: rgba(176, 0, 32); // #B71C1C PrimeNg
+
+$blue-solid: rgba(0, 0, 255); // #0000FF
+$_san-marino-solid: rgba(69, 108, 172); // #456CAC
+$_san-marino: rgba(63, 81, 181); // #3F51B5 PrimeNg
+$_san-marino-12: rgba(63, 81, 181, 0.12); // PrimeNg
+
+$_gray-solid: rgba(128, 128, 128); // #808080
+$_boulder-solid: rgba(122, 122, 122); // #7A7A7A
+$_boulder: rgba(117, 117, 117); // #757575 PrimeNg
+
+$black-solid: #000000;
+$_black-russian-solid: rgba(10, 0, 28); // #0A001C
+
+// SIDEBY COLORS
+$_blue-sideby: #2952D6;
+$_green-sideby: #00CD8E;
+$_orange-sideby: #F56A38;
+$_red-sideby: #E27256;
+$_gray-sideby:  #43414F;
+$_yellow-sideby: #FFCA66;
+
+//Public variables
+$surface-a: #FFFFFF;
+$surface-b: #F2F4F6;
+$surface-c: rgba(1, 205, 142, 0.2);
+$surface-d: #d4d6d9;
+$surface-e: #FFFFFF;
+$surface-f: #FFFFFF;
+
+$text-color: #04272D;
+$text-color-secondary: #69707A;
+$primary-color: $_green-sideby;
+$primary-third-color: #CBFFE2;
+$primary-dark-color: #007A56;
+$primary-light-color: #57DDB5;
+$primary-lighter-color: rgba(119, 123, 241, 0.1);
+$primary-color-text: #FFFFFF;
+$secondary-light-color: #F2FBFD;
+$secondary-color: #04272D;
+
+$error-color: $_monza-solid;
+$info-color: $_blue-600;
+$success-color: $_green-500;
+
+$error-color-light: #EBB5B5;
+$info-color-light: #D3F3F8;
+$warn-color-light: #FFEDCC;
+$success-color-light: #CBFFE2;
+
+$color-shadow-a: #DBDBDB;
+
+$color-black: $_black;
+$color-blue: $_blue-sideby;
+$color-blue-light: $_blue-200;
+$color-red: $_red-solid;
+$color-red-light: $_red-sideby;
+$color-green: $_green-sideby;
+$color-green-light: $primary-light-color;
+$color-yellow: $_orange-400;
+$color-yellow-warn: $_yellow-sideby;
+$color-orange: $_orange-sideby;
+$color-orange-light: #FFB99F;
+$color-grey: $_bluegray-200;
+$color-grey-light: #DAE6E8;
+$color-white: $_white;
+
+$color-text-selected: $primary-color;
+$color-text-hover: $primary-light-color;
+$color-text-dark: $_gray-sideby;
+
+$color-background-a: $surface-a;
+$color-background-b: $surface-b;
+$color-background-c: $surface-c;
+$color-background-d: $surface-d;
+$color-background-e: #83888f;
+$color-background-f: $_orange-sideby;
+
+$color-status-a: #256029;
+$color-status-b: #23547B;
+$color-status-c: #472974;
+$color-status-d: #805B36;
+$color-status-e: #C63737;
+$color-status-f: #414141;
+$color-status-a-light: #C8E6C9;
+$color-status-b-light: #B3E5FC;
+$color-status-c-light: #D5B9FF;
+$color-status-d-light: #FFD8B2;
+$color-status-e-light: #FFCDD2;
+$color-status-f-light: #DBDBDB;
+$color-status-a-lighter: #F0FFF0;
+$color-status-b-lighter: #EBF9FF;
+$color-status-c-lighter: #EBDFFD;
+$color-status-d-lighter: #FFEEDD;
+$color-status-e-lighter: #FFE7E9;
+$color-status-f-lighter: #F5F5F5;

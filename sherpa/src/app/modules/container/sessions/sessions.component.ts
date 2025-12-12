@@ -1,18 +1,3 @@
-import {
-  OnInit,
-  Component,
-  OnDestroy,
-  ViewChild,
-  ElementRef,
-  ViewEncapsulation,
-  HostListener,
-} from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-
-import { Subscription } from 'rxjs';
-import { Socket } from 'ngx-socket-io';
-import { MessageService } from 'primeng/api';
-
 import { UsersService } from '../../shared/services/user.service';
 import { FontsService } from '../../shared/services/fonts.service';
 import { EntitiesService } from '../../shared/services/entities.service';
@@ -30,22 +15,20 @@ import { SessionItemModel } from '../../shared/interfaces/sessions.interfaces';
 
 import { ROUTES } from '../../shared/enums/views.enums';
 import { USER_ROLES } from '../../shared/enums/user.enums';
-import { Dropdown } from 'primeng/dropdown';
-
-declare var LZString: any;
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   selector: 'shr-sessions',
   templateUrl: './sessions.component.html',
   styleUrls: ['./sessions.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+  imports: [DropdownModule]
 })
 export class SessionsComponent implements OnInit, OnDestroy {
   @ViewChild('screen') iframe!: ElementRef;
   @ViewChild('clientCursor') clientCursor!: ElementRef;
   @ViewChild('agentCursor') agentCursor!: ElementRef;
   @ViewChild('box') box!: ElementRef;
-  @ViewChild('sessions_select') sessionsDropdown!: Dropdown;
+  @ViewChild('sessions_select') sessionsDropdown!: any;
 
   user: any;
   entity: any;
@@ -838,7 +821,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
             console.log('wrong selector:', selector);
             element = undefined;
           }
-      
+
           return element;
         }
 
@@ -869,7 +852,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
             else {
               html.style.overflow = 'unset';
               window.addEventListener("scroll", scrollHandler, true);
-            } 
+            }
           } else if (event.data.type === "SCROLL") {
             var element = getElementFromSelector(event.data.data.selector, event.data.data.iframeSelector);
             if (element) {
@@ -935,7 +918,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
           };
           window.parent.postMessage(moveEvent, '*');
         });
-        
+
         const scrollHandler = function(event) {
           var scrollTop = event.target.scrollTop;
           var scrollLeft = event.target.scrollLeft;
@@ -945,7 +928,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
             scrollLeft = event.target.scrollingElement.scrollLeft;
             scrollingElement = event.target.scrollingElement;
           }
-        
+
           latestKnownScrollX = 0;
           latestKnownScrollY = 0;
           if (scrollTop) latestKnownScrollY = scrollTop;
@@ -1327,7 +1310,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
       //this.sessionsDropdown.focus();
       console.log(this.sessionsDropdown.options);
       this.sessionsDropdown.show();
-    
+
     //else this.sessionsDropdown.hide();
   }
 

@@ -1,0 +1,88 @@
+:host {
+  display: block;
+  padding: 2rem;
+  background-color: #f4f7f9; // Light gray background for the whole page
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    p {
+      color: #6c757d;
+    }
+
+    .user-avatar {
+      background-color: #007bff;
+      color: #ffffff;
+      font-size: 1.5rem;
+    }
+  }
+
+  .profile-progress-card {
+    margin-bottom: 2rem;
+    .profile-progress-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .icon-text {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .progress-bar-container {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+
+    .option-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      border-radius: 8px;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      }
+
+      .option-content {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .icon-container {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+    }
+  }
+}
