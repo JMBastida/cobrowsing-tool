@@ -1,7 +1,9 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const bcrypt = require('bcryptjs');
-const CONFIG = require('./config/index.json'); // Correct path to config
+const { randomBytes } = require('crypto');
+const CONFIG = require('./config/index.json');
 const { ROLES } = require('./src/shared/database/user/user.enums');
+const { ENTITY_STATUS } = require('./src/shared/database/entity/entity.enums'); // Import ENTITY_STATUS
 
 const client = new MongoClient(CONFIG.DATABASE.URL, {
   serverApi: {
@@ -11,12 +13,16 @@ const client = new MongoClient(CONFIG.DATABASE.URL, {
   }
 });
 
+// Function to generate a random hex code
+function generateEntityCode() {
+  return randomBytes(12).toString('hex');
+}
+
 async function run() {
   try {
     await client.connect();
     console.log("Connected to MongoDB!");
 
-    // Explicitly use the 'nectardb' database
     const db = client.db(CONFIG.DATABASE.MANAGEMENT_DB); 
     
     const usersCollection = db.collection('users');
@@ -26,16 +32,19 @@ async function run() {
 
     const adminEmail = 'admin@example.com';
     const adminPassword = 'password123';
+    const entityCode = generateEntityCode();
 
-    // 1. Create a default Entity
+    // 1. Create a default Entity with a code and status
     const entityResult = await entitiesCollection.insertOne({
+      code: entityCode,
+      status: ENTITY_STATUS.ACTIVE, // <-- AÑADIDO: Estado ACTIVO
       companyName: 'Admin Company',
       companyEmail: adminEmail,
       creationDate: new Date(),
       modificationDate: new Date(),
     });
     const entityId = entityResult.insertedId;
-    console.log(`Default entity created with id: ${entityId}`);
+    console.log(`Default entity created with id: ${entityId} and code: ${entityCode}`);
 
     // 2. Create a default Entity Config
     await entityConfigsCollection.insertOne({
@@ -52,7 +61,7 @@ async function run() {
       role: ROLES.ADMIN,
       name: 'Admin',
       lastName: 'User',
-      entityId: entityId, // Associate user with the new entity
+      entityId: entityId,
       creationDate: new Date(),
       modificationDate: new Date(),
     });

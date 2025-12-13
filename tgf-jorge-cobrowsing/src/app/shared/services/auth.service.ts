@@ -1,7 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import Cookie from 'js-cookie';
 
 @Injectable({
   providedIn: 'root'
@@ -9,27 +10,30 @@ import { environment } from '../../../environments/environment';
 export class AuthService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.BASE_API_URL}/api/auth`;
+  
+  user = signal<any>(null);
 
   login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/login`, { email, password }).pipe(
       tap((response: any) => {
-        // Correctly extract the token from the nested user object
         if (response && response.user && response.user.token) {
-          localStorage.setItem('token', response.user.token);
+          Cookie.set('token', response.user.token, { expires: 7, secure: true });
+          this.user.set(response.user);
         }
       })
     );
   }
 
   logout() {
-    localStorage.removeItem('token');
+    Cookie.remove('token');
+    this.user.set(null);
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
+  getToken(): string | undefined {
+    return Cookie.get('token');
   }
 
   isLoggedIn(): boolean {
-    return this.getToken() !== null;
+    return !!this.getToken();
   }
 }

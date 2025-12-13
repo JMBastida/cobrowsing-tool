@@ -1,61 +1,11 @@
-<div class="dashboard-container">
-  <!-- Header -->
-  <div class="header">
-    <div class="header-left">
-      <h1>{{ "DASHBOARD.HELLO" | literal: lan() }}{{ userName() ? ", " + userName() : "" }}!</h1>
-      <p>Welcome to your control panel.</p>
-    </div>
-    <div class="header-right">
-      <p-avatar [label]="userInitials()" size="large" shape="circle" styleClass="user-avatar"></p-avatar>
-    </div>
-  </div>
-
-  <p-divider></p-divider>
-
-  <!-- Profile Completion Card -->
-  @if (percent() < 100) {
-  <p-card styleClass="profile-progress-card">
-    <div class="profile-progress-content">
-      <div class="icon-text">
-        <i class="pi pi-exclamation-triangle text-yellow-500 text-2xl"></i>
-        <div class="text">
-          <strong>{{ "DASHBOARD.FILL_PROFILE" | literal: lan() }}</strong>
-          <p>Complete your profile to get the best experience.</p>
-        </div>
-      </div>
-      <div class="progress-bar-container">
-        <p-progressBar [value]="percent()" [showValue]="false" style="width: 100%"></p-progressBar>
-        <span>{{ percent() }}%</span>
-      </div>
-      <p-button
-        [label]="'DASHBOARD.LETS_GO' | literal: lan()"
-        icon="pi pi-arrow-right"
-        iconPos="right"
-        (click)="goToSettings()"
-        styleClass="p-button-link"
-      />
-    </div>
-  </p-card>
-  }
-
-  <!-- Options Grid -->
-  <div class="options-grid">
-    @for (option of options(); track option.url) {
-    <p-card
-      styleClass="option-card"
-      (click)="onSelect(option)"
-      [ngClass]="'border-left-2 border-' + option.color + '-500'"
-    >
-      <div class="option-content">
-        <div class="icon-container" [ngClass]="'bg-' + option.color + '-100 text-' + option.color + '-600'">
-          <i [class]="option.icon + ' text-2xl'"></i>
-        </div>
-        <div class="option-text">
-          <h3 class="font-bold">{{ option.label }}</h3>
-          <p class="text-gray-500">{{ option.description }}</p>
-        </div>
-      </div>
-    </p-card>
-    }
-  </div>
+<div class="dashboard-layout">
+  <header class="dashboard-header">
+    <nav>
+      <a routerLink="sessions" routerLinkActive="active">Sessions</a>
+      <a routerLink="settings" routerLinkActive="active">Settings</a>
+    </nav>
+  </header>
+  <main class="dashboard-content">
+    <router-outlet></router-outlet>
+  </main>
 </div>

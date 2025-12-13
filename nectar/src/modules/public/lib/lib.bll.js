@@ -5,17 +5,27 @@ const entityConfigBll = require("../../../shared/database/entity-config/entity-c
 const { ENTITY_STATUS } = require("../../../shared/database/entity/entity.enums");
 
 async function getCoBrowsingLib(code) {
+  console.log(`[lib.bll] Received request for code: ${code}`);
   const entitiesResponse = await entityBll.find({ code, status: ENTITY_STATUS.ACTIVE });
   const [entity] = entitiesResponse.entities;
-  if (!entity) return null;
+  
+  if (!entity) {
+    console.error(`[lib.bll] No active entity found for code: ${code}`);
+    return null;
+  }
+  
+  console.log(`[lib.bll] Found entity: ${entity._id}`);
+
   const entityConfigsResponse = await entityConfigBll.find(entity._id);
   const [entityConfig] = entityConfigsResponse.entityConfigs;
   const isWidgetEnabled = entityConfig ? !!entityConfig.isWidgetEnabled : false;
+  
   let data = fs.readFileSync('./dist/cobrowsing/lib.js', { encoding: 'utf-8' });
   data = data.replace(/{{entityId}}/g, entity._id);
   data = data.replace(/{{isWidgetEnabled}}/g, isWidgetEnabled);
   data = data.replace(/{{API_BASE_URL}}/g, CONFIG.API_BASE_URL);
   data = data.replace(/{{AGORA_APP_ID}}/g, CONFIG.AGORA_APP_ID);
+  
   return data;
 }
 

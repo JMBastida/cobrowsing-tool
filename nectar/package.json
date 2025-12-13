@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "start": "nodemon app.js",
-    "create:user": "node seed.js"
+    "create:user": "node seed.js",
+    "create:script": "node scripts/libraries/cobrowsing/build-cobrowsing-lib.js"
   },
   "private": true,
   "dependencies": {
