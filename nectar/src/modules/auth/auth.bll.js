@@ -116,6 +116,23 @@ async function signup(data, ip) {
   return response;
 }
 
+async function forceSignup(data, ip) {
+  const { email } = data;
+  const emailParsed = email.trim();
+
+  // Delete existing user and password
+  const usersResponse = await userBll.find({ email: emailParsed });
+  const [existingUser] = usersResponse.users;
+  if (existingUser) {
+    console.log(`--- FORCE SIGNUP: Deleting existing user with email: ${emailParsed} ---`);
+    await userBll.deleteMany({ _id: existingUser._id });
+    await passwordBll.deleteMany({ userId: existingUser._id });
+  }
+
+  // Proceed with normal signup
+  return signup(data, ip);
+}
+
 async function login(body, ip) {
   const { email, password } = body;
   errorIfNotExists(email, 'Username not given.', 400, 'AUTH.ERROR.LOGIN.SUMMARY', 'AUTH.ERROR.LOGIN.EMAIL');
@@ -124,12 +141,22 @@ async function login(body, ip) {
   const usersResponse = await userBll.find({ email: emailParsed });
   const [user] = usersResponse.users;
   errorIfNotExists(user, `User not exists: ${emailParsed}.`, 404, 'AUTH.ERROR.LOGIN.SUMMARY', 'AUTH.ERROR.LOGIN.USER_NOT_FOUND');
+  
+  console.log('--- DEBUG: User found ---');
+  console.log(user);
+  console.log(`--- DEBUG: User Entity ID: ${user.entityId}, Type: ${typeof user.entityId} ---`);
+
   const passwordResponse = await passwordBll.find({ userId: user._id });
   const [passwordFound] = passwordResponse.passwords;
   errorIfNotExists(passwordFound, `Password not exists userId: ${user._id}.`, 404, 'AUTH.ERROR.LOGIN.SUMMARY', 'AUTH.ERROR.LOGIN.USER_NOT_FOUND');
   validatePassword(passwordFound.password, password, email);
   user.token = getToken(user._id);
+  
   const entity = await getEntity(user.entityId);
+  
+  console.log('--- DEBUG: Entity found ---');
+  console.log(entity);
+
   await forceLogout(user._id);
   const response = { user, entity };
   addAccessRegistry(entity._id, user._id, ip);
@@ -152,5 +179,6 @@ async function checkValidLogin(token, ip) {
 module.exports = {
   login,
   signup,
+  forceSignup,
   checkValidLogin,
 };

@@ -1,10 +1,14 @@
 const { newError, errorIfExists, errorIfNotExists } = require('../../helpers/errors.helper');
 const entityConfigRepository = require('./entity-config.repository');
+const { buildFilterQuery, parseOptions } = require('../../helpers/query.helper');
 
 async function find(entityId, filter = {}, options = {}) {
+  const query = buildFilterQuery(filter);
+  const queryOptions = parseOptions(options);
+
   const [entityConfigs, total] = await Promise.all([
-    entityConfigRepository.find(entityId, filter, options),
-    entityConfigRepository.count(entityId, filter),
+    entityConfigRepository.find(entityId, query, queryOptions),
+    entityConfigRepository.count(entityId, query),
   ]);
 
   return { entityConfigs, total };

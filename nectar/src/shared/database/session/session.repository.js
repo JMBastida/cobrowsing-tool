@@ -1,78 +1,45 @@
-const errorHelper = require('../../helpers/errors.helper');
 const { getCollection, ObjectId } = require('../mongo');
-const schema = require('./session.json');
-const { sanitize } = require('../../helpers/objects.helper');
-const { buildFilterQuery, parseOptions } = require('../../helpers/query.helper');
 
-const collectionName = 'sessions';
+const COLLECTION_NAME = 'sessions';
 
-function getQuery(data) {
-  const query = buildFilterQuery(data);
-  if (data.isCompleted) query.isCompleted = eval(data.isCompleted);
-  return query;
+function find(filter = {}, options = {}) {
+  return getCollection(COLLECTION_NAME).find(filter, options).toArray();
 }
 
-function parseSession(data) {
-  const session = { ...data };
-  delete session._id;
-  if (data.creationDate) session.creationDate = new Date(data.creationDate);
-  if (data.modificationDate) session.modificationDate = new Date(data.modificationDate);
-  if (data.testId) session.testId = ObjectId(data.testId);
-  if (data.userId) session.userId = ObjectId(data.userId);
-  if (data.trackId) session.trackId = ObjectId(data.trackId);
-  return sanitize(schema, session);
+function findOne(filter = {}, options = {}) {
+  return getCollection(COLLECTION_NAME).findOne(filter, options);
 }
 
-async function find(entityId, query, options = {}) {
-  const collection = getCollection(entityId, collectionName);
-  const queryParsed = getQuery(query);
-  const optionsParsed = parseOptions(options);
-  const data = await collection.find(queryParsed, optionsParsed).collation({ locale: 'en' }).toArray();
-  return data;
+function count(filter = {}) {
+  return getCollection(COLLECTION_NAME).countDocuments(filter);
 }
 
-function count(entityId, query) {
-  const collection = getCollection(entityId, collectionName);
-  const queryParsed = getQuery(query);
-  return collection.countDocuments(queryParsed);
+function insertOne(session) {
+  return getCollection(COLLECTION_NAME).insertOne(session);
 }
 
-async function insertOne(entityId, session) {
-  const collection = getCollection(entityId, collectionName);
-  const sessionParsed = parseSession(session);
-  const inserted = await collection.insertOne(sessionParsed);
-  errorHelper.errorIfNotExists(inserted.insertedId, 'Insert document fails.');
-  const query = { _id: inserted.insertedId };
-  const data = await collection.findOne(query);
-  return data;
+function updateOne(session) {
+  const filter = { _id: session._id };
+  const update = { $set: session };
+  return getCollection(COLLECTION_NAME).updateOne(filter, update);
 }
 
-async function updateOne(entityId, session) {
-  const collection = getCollection(entityId, collectionName);
-  const query = { _id: session._id };
-  const queryParsed = getQuery(query);
-  const sessionParsed = parseSession(session);
-  const update = { $set: sessionParsed };
-  const updated = await collection.findOneAndUpdate(queryParsed, update, { returnOriginal: false });
-  errorHelper.errorIfNotExists(updated && updated.value, 'Update document fails.');
-  return updated.value;
-}
-
-async function addMessages(entityId, session, messages) {
-  const collection = getCollection(entityId, collectionName);
-  const query = { _id: session._id };
-  const queryParsed = getQuery(query);
-  const sessionParsed = parseSession(session);
-  const update = { $set: sessionParsed, $addToSet: { messages: { $each: messages } } };
-  const updated = await collection.findOneAndUpdate(queryParsed, update, { returnOriginal: false });
-  errorHelper.errorIfNotExists(updated && updated.value, 'Update document fails.');
-  return updated.value;
+function parse(data) {
+  const session = {};
+  if (data._id) session._id = data._id;
+  if (data.testId) session.testId = new ObjectId(data.testId);
+  if (data.userId) session.userId = new ObjectId(data.userId);
+  if (data.trackId) session.trackId = new ObjectId(data.trackId);
+  if (data.name) session.name = data.name;
+  if (data.creationDate) session.creationDate = data.creationDate;
+  return session;
 }
 
 module.exports = {
   find,
+  findOne,
   count,
-  insertOne,
+  parse,
   updateOne,
-  addMessages,
+  insertOne,
 };

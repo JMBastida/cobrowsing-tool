@@ -12,7 +12,7 @@
   "DEFAULT_USER_IMG": "http://localhost:3001/public/media/default-user-img.png",
   "DATABASE": {
     "MANAGEMENT_DB": "nectardb",
-    "URL": "mongodb://localhost:27017"
+    "URL": "mongodb+srv://jorgemartinez_db_user:test123@nectardb.u8yszoz.mongodb.net/?appName=nectardb"
   },
   "AUTH": {
     "APISECRET": "nectarsecret",

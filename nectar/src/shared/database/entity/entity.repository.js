@@ -27,8 +27,20 @@ function parseEntity(data) {
   return sanitize(schema, entity);
 }
 
+function parse(data) {
+  const entity = {};
+  if (data._id) entity._id = data._id;
+  if (data.companyName) entity.companyName = data.companyName;
+  if (data.companyEmail) entity.companyEmail = data.companyEmail;
+  if (data.maxUsers) entity.maxUsers = data.maxUsers;
+  if (data.isScriptInstalled) entity.isScriptInstalled = data.isScriptInstalled;
+  if (data.creationDate) entity.creationDate = data.creationDate;
+  if (data.modificationDate) entity.modificationDate = data.modificationDate;
+  return entity;
+}
+
 async function find(query, options = {}) {
-  const collection = getCollection(dbName, collectionName);
+  const collection = getCollection(collectionName, dbName);
   const queryParsed = getQuery(query);
   const optionsPrsed = parseOptions(options);
   const data = await collection.find(queryParsed, optionsPrsed).collation({ locale: 'en' }).toArray();
@@ -36,13 +48,13 @@ async function find(query, options = {}) {
 }
 
 async function count(query) {
-  const collection = getCollection(dbName, collectionName);
+  const collection = getCollection(collectionName, dbName);
   const queryParsed = getQuery(query);
   return collection.countDocuments(queryParsed);
 }
 
 async function insertOne(entity) {
-  const collection = getCollection(dbName, collectionName);
+  const collection = getCollection(collectionName, dbName);
   const entityParsed = parseEntity(entity);
   const inserted = await collection.insertOne(entityParsed);
   errorIfNotExists(inserted.insertedId, 'Insert document fails.');
@@ -52,7 +64,7 @@ async function insertOne(entity) {
 }
 
 async function updateOne(entity) {
-  const collection = getCollection(dbName, collectionName);
+  const collection = getCollection(collectionName, dbName);
   const query = { _id: entity._id };
   const queryParsed = getQuery(query);
   const entityParsed = parseEntity(entity);
@@ -63,7 +75,7 @@ async function updateOne(entity) {
 }
 
 async function deleteMany(filter) {
-  const collection = getCollection(dbName, collectionName);
+  const collection = getCollection(collectionName, dbName);
   const queryParsed = getQuery(filter);
   await collection.deleteMany(queryParsed);
 }
@@ -77,6 +89,7 @@ async function dropDatabase(entityId) {
 module.exports = {
   find,
   count,
+  parse,
   insertOne,
   updateOne,
   deleteMany,

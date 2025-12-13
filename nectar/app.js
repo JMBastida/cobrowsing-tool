@@ -44,7 +44,7 @@ database.connect().then(() => {
   app.use('/api', appRoutes);
   app.use('/v', viewRoutes);
   app.use('/p', libRoutes);
-  app.get('*', (req, res) => res.status(404).send());
+  app.get(/.*/, (req, res) => res.status(404).send());
   server = http.createServer(app);
   server.listen(CONFIG.PORT, 'localhost', () => {
     logger.info(`Node server listening on http://localhost:${CONFIG.PORT}`);

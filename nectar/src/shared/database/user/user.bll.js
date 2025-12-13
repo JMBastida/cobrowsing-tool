@@ -1,5 +1,6 @@
 const { newError, errorIfExists, errorIfNotExists } = require('../../../shared/helpers/errors.helper');
 const userRepository = require('./user.repository');
+const { buildFilterQuery, parseOptions } = require('../../helpers/query.helper');
 
 async function validateCode(code) {
   if (!code) return false;
@@ -22,12 +23,16 @@ async function generateCode(length) {
 }
 
 async function find(filter = {}, options = {}) {
+  const query = buildFilterQuery(filter);
+  const queryOptions = parseOptions(options);
+  
   const [users, total] = await Promise.all([
-    userRepository.find(filter, options),
-    userRepository.count(filter),
+    userRepository.find(query, queryOptions),
+    userRepository.count(query),
   ]);
 
-  return { users, total };
+  const parsedUsers = users.map(user => userRepository.parse(user));
+  return { users: parsedUsers, total };
 }
 
 async function validateInsertUser(user) {

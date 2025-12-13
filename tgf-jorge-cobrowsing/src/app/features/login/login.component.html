@@ -1,0 +1,14 @@
+<p-toast></p-toast>
+<div class="login-container">
+  <p-card header="Login" styleClass="login-card">
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" type="text" pInputText [(ngModel)]="email" class="w-full" />
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" type="password" pInputText [(ngModel)]="password" class="w-full" />
+    </div>
+    <button pButton label="Login" (click)="onLogin()" class="w-full"></button>
+  </p-card>
+</div>

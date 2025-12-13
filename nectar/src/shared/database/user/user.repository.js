@@ -1,71 +1,56 @@
-const errorHelper = require('../../../shared/helpers/errors.helper');
 const { getCollection, ObjectId } = require('../mongo');
-const schema = require('./user.json');
-const { sanitize } = require('../../helpers/objects.helper');
-const { buildFilterQuery, parseOptions } = require('../../helpers/query.helper');
 const { DATABASE } = require('../../../../config');
 
-const collectionName = 'users';
-const dbName = DATABASE.MANAGEMENT_DB;
+const COLLECTION_NAME = 'users';
+const DB_NAME = DATABASE.MANAGEMENT_DB;
 
-function getQuery(data) {
-  const query = buildFilterQuery(data);
-  return query;
+function find(filter = {}, options = {}) {
+  return getCollection(COLLECTION_NAME, DB_NAME).find(filter, options).toArray();
 }
 
-function parseUser(data) {
-  const user = { ...data };
-  delete user._id;
-  if (data.entityId) user.entityId = ObjectId(data.entityId);
-  if (data.creationDate) user.creationDate = new Date(data.creationDate);
-  if (data.modificationDate) user.modificationDate = new Date(data.modificationDate);
-  return sanitize(schema, user);
+function findOne(filter = {}, options = {}) {
+  return getCollection(COLLECTION_NAME, DB_NAME).findOne(filter, options);
 }
 
-async function find(query, options = {}) {
-  const collection = getCollection(dbName, collectionName);
-  const queryParsed = getQuery(query);
-  const optionsPrsed = parseOptions(options);
-  const data = await collection.find(queryParsed, optionsPrsed).collation({ locale: 'en' }).toArray();
-  return data;
+function count(filter = {}) {
+  return getCollection(COLLECTION_NAME, DB_NAME).countDocuments(filter);
 }
 
-function count(query) {
-  const collection = getCollection(dbName, collectionName);
-  const queryParsed = getQuery(query);
-  return collection.countDocuments(queryParsed);
+function insertOne(user) {
+  return getCollection(COLLECTION_NAME, DB_NAME).insertOne(user);
 }
 
-async function insertOne(user) {
-  const collection = getCollection(dbName, collectionName);
-  const userParsed = parseUser(user);
-  const inserted = await collection.insertOne(userParsed);
-  errorHelper.errorIfNotExists(inserted.insertedId, 'Insert document fails.');
-  const query = { _id: inserted.insertedId };
-  const data = await collection.findOne(query);
-  return data;
+function updateOne(user) {
+  const filter = { _id: user._id };
+  const update = { $set: user };
+  return getCollection(COLLECTION_NAME, DB_NAME).updateOne(filter, update);
 }
 
-async function updateOne(user) {
-  const collection = getCollection(dbName, collectionName);
-  const queryParsed = getQuery({ _id: user._id });
-  const userParsed = parseUser(user);
-  const update = { $set: userParsed };
-  const updated = await collection.findOneAndUpdate(queryParsed, update, { returnOriginal: false });
-  errorHelper.errorIfNotExists(updated && updated.value, 'Update document fails.');
-  return updated.value;
+function deleteMany(filter = {}) {
+  return getCollection(COLLECTION_NAME, DB_NAME).deleteMany(filter);
 }
 
-async function deleteMany(filter) {
-  const collection = getCollection(dbName, collectionName);
-  const queryParsed = getQuery(filter);
-  await collection.deleteMany(queryParsed);
+function parse(data) {
+  const user = {};
+  if (data._id) user._id = data._id;
+  if (data.entityId) user.entityId = data.entityId;
+  if (data.name) user.name = data.name;
+  if (data.lastName) user.lastName = data.lastName;
+  if (data.email) user.email = data.email;
+  if (data.password) user.password = data.password;
+  if (data.role) user.role = data.role;
+  if (data.avatarUrl) user.avatarUrl = data.avatarUrl;
+  if (data.creationDate) user.creationDate = data.creationDate;
+  if (data.modificationDate) user.modificationDate = data.modificationDate;
+  return user;
 }
 
 module.exports = {
   find,
+  findOne,
   count,
-  insertOne,
+  parse,
   updateOne,
+  insertOne,
   deleteMany,
 };

@@ -28,7 +28,7 @@ function parseState(data) {
 }
 
 async function find(query, options = {}) {
-  const collection = getCollection(dbName, collectionName);
+  const collection = getCollection(collectionName, dbName);
   const queryParsed = getQuery(query);
   const optionsPrsed = parseOptions(options);
   const data = await collection.find(queryParsed, optionsPrsed).collation({ locale: 'en' }).toArray();
@@ -36,13 +36,13 @@ async function find(query, options = {}) {
 }
 
 async function count(query) {
-  const collection = getCollection(dbName, collectionName);
+  const collection = getCollection(collectionName, dbName);
   const queryParsed = getQuery(query);
   return collection.countDocuments(queryParsed);
 }
 
 async function insertOne(state) {
-  const collection = getCollection(dbName, collectionName);
+  const collection = getCollection(collectionName, dbName);
   const stateParsed = parseState(state);
   const inserted = await collection.insertOne(stateParsed);
   errorIfNotExists(inserted.insertedId, 'Insert document fails.');
@@ -52,7 +52,7 @@ async function insertOne(state) {
 }
 
 async function updateOne(state) {
-  const collection = getCollection(dbName, collectionName);
+  const collection = getCollection(collectionName, dbName);
   const query = { _id: state._id };
   const queryParsed = getQuery(query);
   const stateParsed = parseState(state);

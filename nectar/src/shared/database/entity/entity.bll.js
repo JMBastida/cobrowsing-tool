@@ -1,5 +1,6 @@
 const { newError, errorIfExists, errorIfNotExists } = require('../../../shared/helpers/errors.helper');
 const entityRepository = require('./entity.repository');
+const { buildFilterQuery, parseOptions } = require('../../helpers/query.helper');
 const { ENTITY_STATUS, DEFAULT_MODULES } = require('./entity.enums');
 
 async function validateCode(code) {
@@ -23,12 +24,16 @@ async function generateCode(length) {
 }
 
 async function find(filter = {}, options = {}) {
+  const query = buildFilterQuery(filter);
+  const queryOptions = parseOptions(options);
+
   const [entities, total] = await Promise.all([
-    entityRepository.find(filter, options),
-    entityRepository.count(filter),
+    entityRepository.find(query, queryOptions),
+    entityRepository.count(query),
   ]);
 
-  return { entities, total };
+  const parsedEntities = entities.map(entity => entityRepository.parse(entity));
+  return { entities: parsedEntities, total };
 }
 
 async function validateInsertEntity(entity) {

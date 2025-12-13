@@ -1,65 +1,43 @@
-const errorHelper = require('../../helpers/errors.helper');
 const { getCollection, ObjectId } = require('../mongo');
-const schema = require('./registry.json');
-const { sanitize } = require('../../helpers/objects.helper');
-const { buildFilterQuery, parseOptions } = require('../../helpers/query.helper');
-const { DATABASE } = require('../../../../config');
 
-const collectionName = 'registries';
-const dbName = DATABASE.MANAGEMENT_DB;
+const COLLECTION_NAME = 'registries';
 
-function getQuery(data) {
-  const query = buildFilterQuery(data);
-  return query;
+function find(filter = {}, options = {}) {
+  return getCollection(COLLECTION_NAME).find(filter, options).toArray();
 }
 
-function parseRegistry(data) {
-  const registry = { ...data };
-  delete registry._id;
-  if (data.creationDate) {
-    registry.creationDate = new Date(data.creationDate);
-  }
-
-  if (data.userId) {
-    registry.userId = ObjectId(data.userId);
-  }
-
-  return sanitize(schema, registry);
+function findOne(filter = {}, options = {}) {
+  return getCollection(COLLECTION_NAME).findOne(filter, options);
 }
 
-async function find(query, options = {}) {
-  const collection = getCollection(dbName, collectionName);
-  const queryParsed = getQuery(query);
-  const optionsPrsed = parseOptions(options);
-  const data = await collection.find(queryParsed, optionsPrsed).collation({ locale: 'en' }).toArray();
-  return data;
+function count(filter = {}) {
+  return getCollection(COLLECTION_NAME).countDocuments(filter);
 }
 
-async function count(query) {
-  const collection = getCollection(dbName, collectionName);
-  const queryParsed = getQuery(query);
-  return collection.countDocuments(queryParsed);
+function insertOne(registry) {
+  return getCollection(COLLECTION_NAME).insertOne(registry);
 }
 
-async function insertOne(registry) {
-  const collection = getCollection(dbName, collectionName);
-  const registryParsed = parseRegistry(registry);
-  const inserted = await collection.insertOne(registryParsed);
-  errorHelper.errorIfNotExists(inserted.insertedId, 'Insert document fails.');
-  const query = { _id: inserted.insertedId };
-  const data = await collection.findOne(query);
-  return data;
+function updateOne(registry) {
+  const filter = { _id: registry._id };
+  const update = { $set: registry };
+  return getCollection(COLLECTION_NAME).updateOne(filter, update);
 }
 
-async function deleteMany(filter) {
-  const collection = getCollection(dbName, collectionName);
-  const queryParsed = getQuery(filter);
-  await collection.deleteMany(queryParsed);
+function parse(data) {
+  const registry = {};
+  if (data._id) registry._id = data._id;
+  if (data.userId) registry.userId = new ObjectId(data.userId);
+  if (data.type) registry.type = data.type;
+  if (data.creationDate) registry.creationDate = data.creationDate;
+  return registry;
 }
 
 module.exports = {
   find,
+  findOne,
   count,
+  parse,
+  updateOne,
   insertOne,
-  deleteMany,
 };

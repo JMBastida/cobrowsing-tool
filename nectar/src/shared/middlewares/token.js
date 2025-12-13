@@ -27,14 +27,24 @@ async function validateToken(req, res, next) {
     const [user] = users;
     lan = user.language;
     const { entityId } = user;
+
+    console.log('--- DEBUG: User found in middleware ---');
+    console.log(user);
+    console.log(`--- DEBUG: Entity ID from user: ${entityId} ---`);
+
     user.token = getToken(user._id);
     req.user = user;
     const entitiesResponse = await entityBll.find({ _id: entityId });
+    
+    console.log('--- DEBUG: Entities response ---');
+    console.log(entitiesResponse);
+
     const { entities } = entitiesResponse;
     errorIfNotExists(entities && entities.length, 'User not found.', 404, 'SHARED.MW.ERROR.SUMMARY', 'SHARED.MW.ERROR.DETAIL');
     const [entity] = entities;
-    const entityConfigResponse = await entityConfigBll.find(entityId);
+    const entityConfigResponse = await entityConfigBll.find(entityId, {});
     const { entityConfigs } = entityConfigResponse;
+    errorIfNotExists(entityConfigs && entityConfigs.length, 'Entity config not found.', 404, 'SHARED.MW.ERROR.SUMMARY', 'SHARED.MW.ERROR.DETAIL');
     const [entityConfig] = entityConfigs;
     req.entity = entity;
     req.entityConfig = entityConfig;

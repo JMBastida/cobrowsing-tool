@@ -124,7 +124,8 @@ export class SessionsComponent implements OnInit, OnDestroy {
     if (!event || !event.data || !event.data.type) return;
     if (event.data.type === 'FONTS_REQUEST') {
       const response = await this.fontsService.handleFonts(event.data.data);
-      this.handleNewFontUrls(response.fileNames);
+      // @ts-ignore
+      this.handleNewFontUrls(response['fileNames']);
       return;
     } else if (event.data.type === 'OPEN_DOCS' && event.data.data && event.data.data.url) {
       window.open(event.data.data.url, "_blank");

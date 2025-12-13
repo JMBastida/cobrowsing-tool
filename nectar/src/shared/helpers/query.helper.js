@@ -1,86 +1,75 @@
 const { ObjectId } = require("mongodb");
 
-function sanitize(filter) {
-  const sanitized = { ...filter };
-  delete sanitized.sortField;
-  delete sanitized.sortOrder;
-  delete sanitized.limit;
-  delete sanitized.skip;
-  return sanitized;
+function buildFilterQuery(data) {
+  const { filter } = parse(data);
+  return filter;
 }
 
-function buildFilterQuery(query) {
+function parseOptions(data) {
+  const { options } = parse(data);
+  return options;
+}
+
+function parse(query) {
   const filter = {};
-  const keys = Object.keys(query);
-  const totalKeys = keys.length;
-  for (let i = 0; i < totalKeys; i += 1) {
-    const k = keys[i];
-    const data = query[k];
-    if (k.includes('Like')) {
-      const regex = new RegExp(data);
-      const index = k.indexOf('Like');
-      filter[k.substr(0, index)] = { $regex: regex, $options: 'i' };
+  const options = {};
+  const { page, limit, sort, ...params } = query;
+
+  if (limit) options.limit = parseInt(limit, 10);
+  if (page) options.skip = parseInt(page, 10) * options.limit;
+  if (sort) options.sort = parseSort(sort);
+
+  const keys = Object.keys(params);
+  for (const k of keys) {
+    let data = params[k];
+    try {
+      data = JSON.parse(data);
+    } catch (e) {
+      // Not a JSON string, continue
+    }
+
+    if (k.includes('Id') || k === '_id') {
+      const toObjectId = (id) => (typeof id === 'string' && ObjectId.isValid(id)) ? new ObjectId(id) : id;
+
+      if (Array.isArray(data)) {
+        if (data.length > 0) {
+          if (k === 'id') { // Special case for 'id' mapping to '_id'
+            filter._id = { $in: data.map(toObjectId) };
+          } else {
+            const index = k.indexOf('s');
+            filter[k.substr(0, index)] = { $in: data.map(toObjectId) };
+          }
+        }
+      } else if (data && data.$in) {
+        filter[k] = { $in: data.$in.map(toObjectId) };
+      } else {
+        filter[k] = toObjectId(data);
+      }
     } else if (k.includes('Date')) {
-      if (k.includes('min')) {
-        let attribute = k.substr(3);
-        attribute = attribute[0].toLowerCase() + attribute.substr(1);
-        filter[attribute] = { $gte: new Date(data) };
-      } else if (k.includes('max')) {
-        let attribute = k.substr(3);
-        attribute = attribute[0].toLowerCase() + attribute.substr(1);
-        filter[attribute] = { $lte: new Date(data) };
-      } else {
-        filter[k] = new Date(data);
-      }
-    } else if (k.includes('min')) {
-      let attribute = k.substr(3);
-      attribute = attribute[0].toLowerCase() + attribute.substr(1);
-      filter[attribute] = { $gte: parseInt(data, 10) };
-    } else if (k.includes('max')) {
-      let attribute = k.substr(3);
-      attribute = attribute[0].toLowerCase() + attribute.substr(1);
-      filter[attribute] = { $lte: parseInt(data, 10) };
-    } else if (k.substr(-3) === 'Ids') {
-      if (data.$in) {
-        filter[k] = { $in: data.$in.map(id => ObjectId(id)) };
-      } else {
-        const index = k.indexOf('Ids');
-        filter[k.substr(0, index)] = { $in: data.map(id => ObjectId(id)) };
-      }
-    } else if (k === 'ids') {
-      filter._id = { $in: data.map(id => ObjectId(id)) };
-    } else if (k.substr(-2).toLowerCase() === 'id') {
-      if (data.constructor === Array) {
-        filter[k] = { $in: data.map(id => ObjectId(id)) };
-      } else {
-        filter[k] = ObjectId(data);
-      }
-    } else if (data && data.constructor === Array) {
+      if (data.$gte) filter[k] = { $gte: new Date(data.$gte) };
+      if (data.$lte) filter[k] = { ...filter[k], $lte: new Date(data.$lte) };
+    } else if (Array.isArray(data)) {
       filter[k] = { $in: data };
+    } else if (data && data.$regex) {
+      filter[k] = { $regex: data.$regex, $options: 'i' };
     } else {
       filter[k] = data;
     }
   }
 
-  return sanitize(filter);
+  return { filter, options };
 }
 
-function parseOptions(options) {
-  const optionsParsed = { ...options };
-  optionsParsed.sort = { creationDate: -1 };
-  if (options.limit) optionsParsed.limit = parseInt(options.limit, 10);
-  if (options.skip) optionsParsed.skip = parseInt(options.skip, 10);
-  if (options.sortField) {
-    delete optionsParsed.sort.creationDate;
-    optionsParsed.sort[options.sortField] = parseInt(options.sortOrder, 10);
-  }
-
-  delete optionsParsed.sortField;
-  delete optionsParsed.sortOrder;
-  return optionsParsed;
+function parseSort(sort) {
+  const sortArr = sort.split(':');
+  const field = sortArr[0];
+  const order = sortArr[1];
+  return { [field]: order === 'desc' ? -1 : 1 };
 }
 
 module.exports = {
+  parse,
+  parseSort,
   buildFilterQuery,
   parseOptions,
 };

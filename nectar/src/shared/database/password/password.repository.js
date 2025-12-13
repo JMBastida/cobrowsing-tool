@@ -1,71 +1,50 @@
-const errorHelper = require('../../helpers/errors.helper');
 const { getCollection, ObjectId } = require('../mongo');
-const schema = require('./password.json');
-const { sanitize } = require('../../helpers/objects.helper');
-const { buildFilterQuery, parseOptions } = require('../../helpers/query.helper');
 const { DATABASE } = require('../../../../config');
 
-const collectionName = 'passwords';
-const dbName = DATABASE.MANAGEMENT_DB;
+const COLLECTION_NAME = 'passwords';
+const DB_NAME = DATABASE.MANAGEMENT_DB;
 
-function getQuery(data) {
-  const query = buildFilterQuery(data);
-  return query;
+function find(filter = {}, options = {}) {
+  return getCollection(COLLECTION_NAME, DB_NAME).find(filter, options).toArray();
 }
 
-function parsePassword(data) {
-  const password = { ...data };
-  delete password._id;
-  if (data.entityId) password.entityId = ObjectId(data.entityId);
-  if (data.creationDate) password.creationDate = new Date(data.creationDate);
-  if (data.modificationDate) password.modificationDate = new Date(data.modificationDate);
-  return sanitize(schema, password);
+function findOne(filter = {}, options = {}) {
+  return getCollection(COLLECTION_NAME, DB_NAME).findOne(filter, options);
 }
 
-async function find(query, options = {}) {
-  const collection = getCollection(dbName, collectionName);
-  const queryParsed = getQuery(query);
-  const optionsPrsed = parseOptions(options);
-  const data = await collection.find(queryParsed, optionsPrsed).collation({ locale: 'en' }).toArray();
-  return data;
+function count(filter = {}) {
+  return getCollection(COLLECTION_NAME, DB_NAME).countDocuments(filter);
 }
 
-function count(query) {
-  const collection = getCollection(dbName, collectionName);
-  const queryParsed = getQuery(query);
-  return collection.countDocuments(queryParsed);
+function insertOne(password) {
+  return getCollection(COLLECTION_NAME, DB_NAME).insertOne(password);
 }
 
-async function insertOne(password) {
-  const collection = getCollection(dbName, collectionName);
-  const passwordParsed = parsePassword(password);
-  const inserted = await collection.insertOne(passwordParsed);
-  errorHelper.errorIfNotExists(inserted.insertedId, 'Insert document fails.');
-  const query = { _id: inserted.insertedId };
-  const data = await collection.findOne(query);
-  return data;
+function updateOne(password) {
+  const filter = { _id: password._id };
+  const update = { $set: password };
+  return getCollection(COLLECTION_NAME, DB_NAME).updateOne(filter, update);
 }
 
-async function updateOne(password) {
-  const collection = getCollection(dbName, collectionName);
-  const queryParsed = getQuery({ _id: password._id });
-  const passwordParsed = parsePassword(password);
-  const update = { $set: passwordParsed };
-  const updated = await collection.findOneAndUpdate(queryParsed, update, { returnOriginal: false });
-  errorHelper.errorIfNotExists(updated && updated.value, 'Update document fails.');
-  return updated.value;
+function deleteMany(filter = {}) {
+  return getCollection(COLLECTION_NAME, DB_NAME).deleteMany(filter);
 }
 
-async function deleteMany(filter) {
-  const collection = getCollection(dbName, collectionName);
-  const queryParsed = getQuery(filter);
-  await collection.deleteMany(queryParsed);
+function parse(data) {
+  const password = {};
+  if (data._id) password._id = data._id;
+  if (data.entityId) password.entityId = new ObjectId(data.entityId);
+  if (data.password) password.password = data.password;
+  if (data.creationDate) password.creationDate = data.creationDate;
+  return password;
 }
 
 module.exports = {
   find,
+  findOne,
   count,
-  insertOne,
+  parse,
   updateOne,
+  insertOne,
   deleteMany,
 };

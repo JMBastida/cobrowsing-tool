@@ -1,62 +1,68 @@
-const errorHelper = require('../../helpers/errors.helper');
-const { getCollection } = require('../mongo');
-const schema = require('./entity-config.json');
+const { getCollection, ObjectId } = require('../mongo');
+const { DATABASE } = require('../../../../config');
 const { sanitize } = require('../../helpers/objects.helper');
+const { errorIfNotExists } = require('../../helpers/errors.helper');
 const { buildFilterQuery, parseOptions } = require('../../helpers/query.helper');
+const schema = require('./entity-config.json');
 
-const collectionName = 'entityconfigs';
+const collectionName = 'entity-configs';
+const dbName = DATABASE.MANAGEMENT_DB;
 
 function getQuery(data) {
   const query = buildFilterQuery(data);
   return query;
 }
 
-function parseEntity(data) {
-  const entity = { ...data };
-  delete entity._id;
+function parseEntityConfig(data) {
+  const entityConfig = { ...data };
+  delete entityConfig._id;
   if (data.creationDate) {
-    entity.creationDate = new Date(data.creationDate);
+    entityConfig.creationDate = new Date(data.creationDate);
   }
 
   if (data.modificationDate) {
-    entity.modificationDate = new Date(data.modificationDate);
+    entityConfig.modificationDate = new Date(data.modificationDate);
   }
 
-  return sanitize(schema, entity);
+  return sanitize(schema, entityConfig);
 }
 
 async function find(entityId, query, options = {}) {
-  const collection = getCollection(entityId, collectionName);
-  const queryParsed = getQuery(query);
+  // Use the shared database
+  const collection = getCollection(collectionName, dbName);
+  
+  // Add entityId to the query to filter by the correct entity
+  const queryParsed = getQuery({ ...query, entityId: new ObjectId(entityId) });
   const optionsPrsed = parseOptions(options);
+  
   const data = await collection.find(queryParsed, optionsPrsed).collation({ locale: 'en' }).toArray();
   return data;
 }
 
 async function count(entityId, query) {
-  const collection = getCollection(entityId, collectionName);
-  const queryParsed = getQuery(query);
+  const collection = getCollection(collectionName, dbName);
+  const queryParsed = getQuery({ ...query, entityId: new ObjectId(entityId) });
   return collection.countDocuments(queryParsed);
 }
 
-async function insertOne(entityId, entity) {
-  const collection = getCollection(entityId, collectionName);
-  const entityParsed = parseEntity(entity);
-  const inserted = await collection.insertOne(entityParsed);
-  errorHelper.errorIfNotExists(inserted.insertedId, 'Insert document fails.');
+async function insertOne(entityId, entityConfig) {
+  const collection = getCollection(collectionName, dbName);
+  const entityConfigParsed = parseEntityConfig({ ...entityConfig, entityId: new ObjectId(entityId) });
+  const inserted = await collection.insertOne(entityConfigParsed);
+  errorIfNotExists(inserted.insertedId, 'Insert document fails.');
   const query = { _id: inserted.insertedId };
   const data = await collection.findOne(query);
   return data;
 }
 
-async function updateOne(entityId, entity) {
-  const collection = getCollection(entityId, collectionName);
-  const query = { _id: entity._id };
+async function updateOne(entityId, entityConfig) {
+  const collection = getCollection(collectionName, dbName);
+  const query = { _id: entityConfig._id };
   const queryParsed = getQuery(query);
-  const entityParsed = parseEntity(entity);
-  const update = { $set: entityParsed };
+  const entityConfigParsed = parseEntityConfig(entityConfig);
+  const update = { $set: entityConfigParsed };
   const updated = await collection.findOneAndUpdate(queryParsed, update, { returnOriginal: false });
-  errorHelper.errorIfNotExists(updated && updated.value, 'Update document fails.');
+  errorIfNotExists(updated && updated.value, 'Update document fails.');
   return updated.value;
 }
 

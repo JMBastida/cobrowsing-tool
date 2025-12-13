@@ -2,13 +2,14 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { USER_ROLES } from '../enums/user.enums';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
   private http = inject(HttpClient);
-  private baseUrl = '/api'; // Assuming a proxy is set up for /api
+  private baseUrl = `${environment.BASE_API_URL}/api`;
 
   user = signal<any>(null);
 
