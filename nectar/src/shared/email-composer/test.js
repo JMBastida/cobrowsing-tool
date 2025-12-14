@@ -5,7 +5,7 @@ const { sendInternEmail, sendEmailToClient } = require('./email-composer.bll');
 // next day template id: 2832926
 
 const options = {
-  to: 'samuel@vidiwise.com',
+  to: 'jorge@uoc.es',
   templateId: 2833058,
   isPlainText: true,
 };
@@ -13,10 +13,10 @@ const options = {
 const type = 'userWelcome';
 
 const data = {
-  name: 'Samuel',
+  name: 'Jorge',
   genderLetter: 'o',
   password: 'APSM1984DS',
-  email: 'samuel@vidiwise.com',
+  email: 'jorge@uoc.com',
 };
 
 // sendInternEmail(options, type, data);

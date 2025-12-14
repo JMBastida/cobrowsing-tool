@@ -10,7 +10,7 @@ async function setStatus(entityId, status) {
   if (!entity) return { ERROR: `Entity not found for entityId: ${entityId}. Are you sure this is a valid id?` };
   if (!status) return { ERROR: `Status not given. Set a valid status` };
   const newStatus = status.toUpperCase();
-  if (!ENTITY_STATUS[newStatus]) return { ERROR: `Invalid status: ${status}. Are you sure this is a valid status? Ask Samuel if you don't know which status are valid.` };
+  if (!ENTITY_STATUS[newStatus]) return { ERROR: `Invalid status: ${status}. Are you sure this is a valid status?` };
   const entityParsed = { _id: entity._id, status: newStatus };
   const entityUpdated = await entityBll.updateOne(entityParsed);
   return { STATUS: `Entity status changed from ${entity.status} to ${entityUpdated.status}` };

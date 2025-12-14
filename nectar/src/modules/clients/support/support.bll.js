@@ -2,7 +2,7 @@ const emailComposer = require('../../../shared/email-composer/email-composer.bll
 const ticketBll = require('../../../shared/database/ticket/ticket.bll');
 
 function sendMessage(user, body) {
-  const options = { to: 'samuel@vidiwise.com, grisel@vidiwise.com, diego@vidiwise.com, wrahn@vidiwise.com, jmartinez@vidiwise.com, vserrano@vidiwise.com' };
+  const options = { to: 'jmartinezbastida@uoc.edu' };
   let type = 'support';
   const emailData = {
     message: body.message,

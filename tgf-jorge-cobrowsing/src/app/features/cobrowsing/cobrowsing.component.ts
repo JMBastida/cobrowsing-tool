@@ -1,15 +1,22 @@
-import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy, ViewChild, ElementRef, HostListener, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { SocketService } from '../../shared/services/socket.service';
 import LZString from 'lz-string';
+import { ButtonModule } from 'primeng/button';
+
+interface ClickRipple {
+  id: number;
+  x: number;
+  y: number;
+}
 
 @Component({
   selector: 'app-cobrowsing',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ButtonModule],
   templateUrl: './cobrowsing.component.html',
   styleUrls: ['./cobrowsing.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -19,6 +26,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private socketService = inject(SocketService);
   private sanitizer = inject(DomSanitizer);
+  private cdr = inject(ChangeDetectorRef);
 
   @ViewChild('iframe') iframe: ElementRef<HTMLIFrameElement> | undefined;
   @ViewChild('screenContainer') screenContainer: ElementRef<HTMLDivElement> | undefined;
@@ -27,14 +35,17 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   iframeSrc = signal<SafeResourceUrl | null>(null);
   clientCursor = signal<{ x: number, y: number } | null>(null);
   scale = signal<number>(1);
+  clickRipples = signal<ClickRipple[]>([]);
+  
+  isCobrowsing = signal(false);
+  isCobrowsingRequest = signal(false);
   
   private subscriptions: Subscription[] = [];
   private tempDomData: any[] = [];
   private shadowDomElements: any[] = [];
   private scrollOrder = 0;
   private scrollValue = { x: 0, y: 0 };
-  private avoidAgentEvents = true; // Initially true until co-browsing starts
-  private isCobrowsing = false; // Track co-browsing state
+  private avoidAgentEvents = true;
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -42,109 +53,76 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
 
     if (id) {
       this.setupSocketListeners(id);
-      console.log('Emitting watch-session for:', id);
       this.socketService.emit('watch-session', { sessionId: id });
     }
-  }
-
-  @HostListener('window:resize') 
-  handleResize() {
-    // Logic to update scale will be implemented here or triggered by socket resize event
-    // For now, we rely on the socket 'resize' event to set dimensions and scale
   }
 
   @HostListener('window:message', ['$event']) 
   handleMessage(event: MessageEvent) {
     if (!event || !event.data || !event.data.type) return;
-    
-    // Handle FONTS_REQUEST if needed (omitted for brevity, can be added)
-    
-    if (this.avoidAgentEvents || !this.isCobrowsing) return;
+    if (this.avoidAgentEvents || !this.isCobrowsing()) return;
     this.socketService.emit('new-agent-event', event.data);
   }
 
   private setupSocketListeners(sessionId: string) {
-    // Update DOM (Initial Load)
     this.subscriptions.push(
-      this.socketService.listen('update-dom').subscribe((data: any) => {
-        console.log('Received update-dom:', data);
-        if (!data) return;
-        this.tempDomData.push(data);
-        const last = this.tempDomData.find(d => d.isLast);
-        
-        if (!last) {
-            console.log('Waiting for last DOM packet...');
-            return;
+      this.socketService.listen('update-dom').subscribe((data: any) => this.handleUpdateDom(data)),
+      this.socketService.listen('dom-mutations').subscribe((data: any) => this.handleDomMutations(data)),
+      this.socketService.listen('client-event').subscribe((data: any) => this.handleClientEvent(data)),
+      this.socketService.listen('resize').subscribe((data: any) => this.handleRemoteResize(data)),
+      this.socketService.listen('session-not-found').subscribe(() => this.router.navigate(['/dashboard/sessions'])),
+      
+      // Co-browsing flow events
+      this.socketService.listen('co-browsing-response').subscribe((data: { isAccepted: boolean }) => {
+        this.isCobrowsingRequest.set(false);
+        if (data.isAccepted) {
+          this.isCobrowsing.set(true);
+          this.handlePointerEvents(true);
         }
-        
-        console.log('Last DOM packet received. Assembling DOM...');
-        const { timeStamp } = last;
-        const validData = this.tempDomData.filter(d => d.timeStamp === timeStamp);
-        if (last.order >= validData.length) {
-             console.log('Missing packets. Expected:', last.order + 1, 'Received:', validData.length);
-             return;
-        }
-        
-        validData.sort((a, b) => a.order - b.order);
-        const tempData = validData.reduce((prev, curr) => {
-          if (curr.html) prev.html += curr.html;
-          if (curr.shadowString) prev.shadowString += curr.shadowString;
-          return prev;
-        }, { html: '', shadowString: '' });
-        
-        const { html, shadowString } = tempData;
-        console.log('DOM assembled. Parsing HTML...');
-        const htmlParsed = this.parseHtml(html);
-        
-        if (shadowString) {
-          try {
-            const shadow = JSON.parse(shadowString);
-            if (shadow && shadow.length) this.shadowDomElements = shadow;
-          } catch (e) { console.error('Error parsing shadow DOM', e); }
-        }
-
-        // Set the iframe source. The iframe element will be created by Angular when iframeSrc has a value.
-        // We cannot access this.iframe.nativeElement here immediately because it might not be rendered yet.
-        // The content will be loaded via [src] binding.
-        const blob = new Blob([htmlParsed], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        console.log('Setting iframeSrc...');
-        this.iframeSrc.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
-        
-        this.tempDomData = this.tempDomData.filter(d => d.timeStamp !== timeStamp);
+      }),
+      this.socketService.listen('co-browsing-stopped').subscribe(() => {
+        this.isCobrowsing.set(false);
+        this.isCobrowsingRequest.set(false);
+        this.handlePointerEvents(false);
+      }),
+      this.socketService.listen('co-browsing-request-stopped').subscribe(() => {
+        this.isCobrowsingRequest.set(false);
       })
     );
+  }
 
-    // DOM Mutations
-    this.subscriptions.push(
-      this.socketService.listen('dom-mutations').subscribe((data: any) => {
-        // console.log('Received dom-mutations'); // Can be noisy
-        this.handleDomMutations(data);
-      })
-    );
+  private handleUpdateDom(data: any) {
+    if (!data) return;
+    this.tempDomData.push(data);
+    const last = this.tempDomData.find(d => d.isLast);
+    if (!last) return;
+    
+    const { timeStamp } = last;
+    const validData = this.tempDomData.filter(d => d.timeStamp === timeStamp);
+    if (last.order >= validData.length) return;
+    
+    validData.sort((a, b) => a.order - b.order);
+    const tempData = validData.reduce((prev, curr) => {
+      if (curr.html) prev.html += curr.html;
+      if (curr.shadowString) prev.shadowString += curr.shadowString;
+      return prev;
+    }, { html: '', shadowString: '' });
+    
+    const { html, shadowString } = tempData;
+    const htmlParsed = this.parseHtml(html);
+    
+    if (shadowString) {
+      try {
+        const shadow = JSON.parse(shadowString);
+        if (shadow && shadow.length) this.shadowDomElements = shadow;
+      } catch (e) { console.error('Error parsing shadow DOM', e); }
+    }
 
-    // Client Events (Mouse, Scroll, Click, Input)
-    this.subscriptions.push(
-      this.socketService.listen('client-event').subscribe((data: any) => {
-        // console.log('Received client-event', data.type);
-        this.handleClientEvent(data);
-      })
-    );
-
-    // Resize
-    this.subscriptions.push(
-      this.socketService.listen('resize').subscribe((data: any) => {
-        this.handleRemoteResize(data);
-      })
-    );
-
-    // Session Not Found
-    this.subscriptions.push(
-      this.socketService.listen('session-not-found').subscribe(() => {
-        console.warn('Session not found');
-        this.router.navigate(['/dashboard/sessions']);
-      })
-    );
+    const blob = new Blob([htmlParsed], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    this.iframeSrc.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
+    
+    this.tempDomData = this.tempDomData.filter(d => d.timeStamp !== timeStamp);
   }
 
   private handleDomMutations(data: any) {
@@ -156,7 +134,6 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
     if (!parentNode) return;
 
     if (addedElements) {
-        // Logic for added elements (simplified from reference)
         addedElements.forEach((element: any) => {
             // @ts-ignore
             const placeholder = this.iframe.nativeElement.contentWindow!.document.createElement('div');
@@ -193,6 +170,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
     }
     
     if (newOuterHtml) {
+        // @ts-ignore
         const placeholder = this.iframe.nativeElement.contentWindow!.document.createElement('div');
         placeholder.innerHTML = newOuterHtml;
         const node = placeholder.firstElementChild;
@@ -225,12 +203,25 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
         this.handlePointerEvents(false);
         this.scrollValue = data.data.value;
         
-        // Forward the event to the iframe's internal script
+        const selector = data.data.selector;
+        const scrollX = data.data.value.x || 0;
+        const scrollY = data.data.value.y || 0;
+
+        if (selector) {
+            const element = this.getElementFromSelector(selector);
+            if (element) {
+                element.scrollTo({ top: scrollY, left: scrollX, behavior: 'auto' });
+            }
+        } else {
+            this.iframe.nativeElement.contentWindow.scrollTo({ top: scrollY, left: scrollX, behavior: 'auto' });
+        }
+
+        // @ts-ignore
         this.iframe.nativeElement.contentWindow.postMessage(data, '*');
         
         setTimeout(() => {
              const now = Date.now();
-             if (this.isCobrowsing && now >= this.scrollOrder + 1500) this.handlePointerEvents(true);
+             if (this.isCobrowsing() && now >= this.scrollOrder + 1500) this.handlePointerEvents(true);
         }, 1500);
     } else if (data.type === 'MOUSE_MOVE') {
         let left = data.data.left;
@@ -244,9 +235,9 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
                  top += position.top;
              }
         }
-        
         this.clientCursor.set({ x: this.scale() * left, y: this.scale() * top });
     } else if (data.type === 'CLICK') {
+        this.createClickRipple(data.data.x, data.data.y);
         if (data.data.selector && this.iframe?.nativeElement?.contentWindow) {
              const element = this.getElementFromSelector(data.data.selector);
              if (element && (element.type === 'checkbox' || element.type === 'radio')) {
@@ -265,6 +256,19 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
              }
         }
     }
+  }
+
+  private createClickRipple(x: number, y: number) {
+    const newRipple: ClickRipple = {
+      id: Date.now(),
+      x: this.scale() * x,
+      y: this.scale() * y
+    };
+    this.clickRipples.update(ripples => [...ripples, newRipple]);
+    
+    setTimeout(() => {
+      this.clickRipples.update(ripples => ripples.filter(r => r.id !== newRipple.id));
+    }, 500);
   }
 
   private handleRemoteResize(data: any) {
@@ -311,7 +315,6 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
         }
       });
       
-      // Apply initial scroll if available
       if (this.scrollValue.x || this.scrollValue.y) {
           this.iframe.nativeElement.contentWindow.scrollTo(this.scrollValue.x, this.scrollValue.y);
       }
@@ -352,7 +355,6 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
         element = doc.querySelector(selector);
       }
     } catch (error) {
-      // console.log('wrong selector:', selector);
       element = undefined;
     }
     return element;
@@ -369,54 +371,8 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   }
 
   private getExtraStyles() {
-    // Inject a standard CSS reset to normalize styles and fix margin issues.
     return `
       <style>
-        /* A simple but effective CSS Reset */
-        html, body, div, span, applet, object, iframe,
-        h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-        a, abbr, acronym, address, big, cite, code,
-        del, dfn, em, img, ins, kbd, q, s, samp,
-        small, strike, strong, sub, sup, tt, var,
-        b, u, i, center,
-        dl, dt, dd, ol, ul, li,
-        fieldset, form, label, legend,
-        table, caption, tbody, tfoot, thead, tr, th, td,
-        article, aside, canvas, details, embed, 
-        figure, figcaption, footer, header, hgroup, 
-        menu, nav, output, ruby, section, summary,
-        time, mark, audio, video {
-          margin: 0;
-          padding: 0;
-          border: 0;
-          font-size: 100%;
-          font: inherit;
-          vertical-align: baseline;
-        }
-        /* HTML5 display-role reset for older browsers */
-        article, aside, details, figcaption, figure, 
-        footer, header, hgroup, menu, nav, section {
-          display: block;
-        }
-        body {
-          line-height: 1;
-        }
-        ol, ul {
-          list-style: none;
-        }
-        blockquote, q {
-          quotes: none;
-        }
-        blockquote:before, blockquote:after,
-        q:before, q:after {
-          content: '';
-          content: none;
-        }
-        table {
-          border-collapse: collapse;
-          border-spacing: 0;
-        }
-        /* Custom scrollbar styles */
         html::-webkit-scrollbar { display: none; }
         html { -ms-overflow-style: none; scrollbar-width: none; }
       </style>
@@ -424,7 +380,6 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   }
 
   private getIframeListeners() {
-    // Injects the script that listens to events inside the iframe and posts them to parent
     return `
       <script>
         var avoidAgentEvents = ${this.avoidAgentEvents};
@@ -447,31 +402,26 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
           return path;
         }
 
-        // Listen for messages from the parent window (the Angular app)
         window.addEventListener("message", (event) => {
           if (!event || !event.data || !event.data.type) return;
           
           if (event.data.type === "SCROLL") {
-            console.log("IFRAME: Received SCROLL event", event.data.data);
             var selector = event.data.data.selector;
             var value = event.data.data.value;
             var element;
 
             if (selector === 'html' || selector === 'window' || selector === 'body') {
-              console.log("IFRAME: Scrolling window/html/body to", value.x, value.y);
-              // Try scrolling everything to be sure
               window.scrollTo({ top: value.y, left: value.x, behavior: 'auto' });
               if (document.documentElement) document.documentElement.scrollTop = value.y;
               if (document.body) document.body.scrollTop = value.y;
             } else {
               element = document.querySelector(selector);
               if (element) {
-                console.log("IFRAME: Scrolling element", selector, "to", value.x, value.y);
                 element.scrollTo({ top: value.y, left: value.x, behavior: 'auto' });
-              } else {
-                console.warn("IFRAME: Element not found for selector", selector);
               }
             }
+          } else if (event.data.type === "AVOID_EVENTS") {
+             avoidAgentEvents = event.data.data.value;
           }
         });
 
@@ -524,6 +474,15 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
     
     if (isAllowed) this.iframe.nativeElement.style.pointerEvents = 'unset';
     else this.iframe.nativeElement.style.pointerEvents = 'none';
+  }
+
+  requestCoBrowsing() {
+    this.isCobrowsingRequest.set(true);
+    this.socketService.emit('request-co-browsing', {});
+  }
+
+  stopCoBrowsing() {
+    this.socketService.emit('agent-stop-co-browsing', {});
   }
 
   ngOnDestroy() {

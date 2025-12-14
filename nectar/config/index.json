@@ -6,7 +6,7 @@
   "FONTS_FOLDER": "./public/fonts",
   "DEFAULT_LANGUAGE": "en",
   "DEFAULT_MAX_USERS": 10,
-  "DEFAULT_EMAIL": "samuel@sideby.io",
+  "DEFAULT_EMAIL": "jmartinezbasti@uoc.edu",
   "COBROWSING_APP_ID": "COBROWSING_APP_ID",
   "AGORA_APP_ID": "31418e744b9e4da6aace0d0d5ca0d72c",
   "DEFAULT_USER_IMG": "http://localhost:3001/public/media/default-user-img.png",

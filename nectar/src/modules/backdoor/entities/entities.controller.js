@@ -12,7 +12,7 @@ async function setStatus(req, res) {
     res.send(response);
   } catch (err) {
     logger.error(err);
-    res.send({ ERROR: `Something went wrong. Ask Samuel. ID: ${entityId}. STATUS: ${status}.` });
+    res.send({ ERROR: `Something went wrong. ID: ${entityId}. STATUS: ${status}.` });
   }
 }
 
@@ -24,7 +24,7 @@ async function handleModule(req, res) {
     res.send(response);
   } catch (err) {
     logger.error(err);
-    res.send({ ERROR: `Something went wrong. Ask Samuel. ID: ${entityId}. STATUS: ${status}.` });
+    res.send({ ERROR: `Something went wrong. ID: ${entityId}. STATUS: ${status}.` });
   }
 }
 
@@ -36,7 +36,7 @@ async function removeEntity(req, res) {
     res.send(response);
   } catch (err) {
     logger.error(err);
-    res.send({ ERROR: `Something went wrong. Ask Samuel. ID: ${entityId}.` });
+    res.send({ ERROR: `Something went wrong. ID: ${entityId}.` });
   }
 }
 

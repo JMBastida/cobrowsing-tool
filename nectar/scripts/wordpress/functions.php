@@ -1,6 +1,6 @@
 /** 
- * CUSTOM VIDIWISE CODE
- * Author: Samuel Huidobro Taengua
+ * CUSTOM CODE
+ * Author: Jorge Martinez BAstida
  */
 add_action( 'wp_footer', 'on_form_sent' );
  
