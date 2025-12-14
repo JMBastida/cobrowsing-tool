@@ -1,26 +1,61 @@
+:host {
+  display: block;
+  height: 100vh;
+  background-color: var(--surface-ground);
+}
+
 .dashboard-layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
 }
 
-.dashboard-header {
-  padding: 1rem;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
+// PrimeNG Toolbar Customization
+:host ::ng-deep .dashboard-toolbar {
+  border-radius: 0;
+  border-bottom: 1px solid var(--surface-border);
+  padding: 0.5rem 1.5rem;
+  background-color: var(--surface-card);
+
+  .p-toolbar-group-start,
+  .p-toolbar-group-center,
+  .p-toolbar-group-end {
+    align-items: center;
+  }
 }
 
-.dashboard-header nav a {
-  margin-right: 1rem;
-  text-decoration: none;
-  color: #495057;
+.app-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-right: 2rem;
+  color: var(--text-color);
 }
 
-.dashboard-header nav a.active {
-  font-weight: bold;
+// PrimeNG Menubar Customization
+:host ::ng-deep .p-menubar {
+  padding: 0;
+  border: none;
+  background: none;
+
+  .p-menuitem-link {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+  }
+
+  .p-menuitem.p-menuitem-active > .p-menuitem-link {
+    background-color: var(--surface-hover);
+  }
+}
+
+// PrimeNG Breadcrumb Customization
+:host ::ng-deep .p-breadcrumb {
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 .dashboard-content {
   flex-grow: 1;
-  padding: 1rem;
+  padding: 1.5rem;
+  overflow-y: auto;
 }

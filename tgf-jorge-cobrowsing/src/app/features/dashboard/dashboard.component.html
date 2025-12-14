@@ -1,10 +1,25 @@
 <div class="dashboard-layout">
-  <header class="dashboard-header">
-    <nav>
-      <a routerLink="sessions" routerLinkActive="active">Sessions</a>
-      <a routerLink="settings" routerLinkActive="active">Settings</a>
-    </nav>
-  </header>
+  <p-toolbar styleClass="dashboard-toolbar">
+    <ng-template pTemplate="start">
+      <div class="flex align-items-center gap-2">
+        <h1 class="app-title">Co-browsing</h1>
+        <p-menubar [model]="items" />
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="center">
+      <p-breadcrumb [model]="breadcrumbs" [home]="home" />
+    </ng-template>
+
+    <ng-template pTemplate="end">
+      <p-button 
+        label="Logout" 
+        icon="pi pi-sign-out" 
+        styleClass="p-button-text p-button-danger" 
+        (click)="logout()" />
+    </ng-template>
+  </p-toolbar>
+
   <main class="dashboard-content">
     <router-outlet></router-outlet>
   </main>

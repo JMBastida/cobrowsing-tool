@@ -1,4 +1,4 @@
-# Cobrowsing Tool
+# SIDEBY: Co-browsing Tool
 
 This project is a co-browsing tool that allows agents to view and interact with a user's browser session in real-time. It consists of a Node.js backend (`nectar`) and an Angular frontend (`tgf-jorge-cobrowsing`).
 
@@ -82,6 +82,10 @@ Easy way:
 ```js
 function e(){var e=a.createElement("script");e.async=!0,e.type="text/javascript",e.src="http://localhost:3001/p/cd90b9a81dea05dd561c5d79";var t=a.getElementsByTagName("script")[0];t&&t.parentNode?t.parentNode.insertBefore(e,t):a.head.appendChild(e)}var a,t;"undefined"==typeof Sideby&&(Sideby={}),a=document,t=window,"complete"===a.readyState?e():t.addEventListener("load",e,!1);
 ```
+Go to console and paste the code:
+![img.png](img.png)
+and with the front open in split screen you can do a test:
+![img_1.png](img_1.png)
 Another option:
 
 To simulate a client website:
