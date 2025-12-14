@@ -46,3 +46,29 @@
     white-space: nowrap;
   }
 }
+
+/* Estilos para la onda del clic */
+.click-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgba(255, 0, 0, 0.7); /* Color de la onda (rojo) */
+  width: 20px;
+  height: 20px;
+  transform: translate(-50%, -50%);
+  animation: ripple-effect 0.5s linear;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+@keyframes ripple-effect {
+  from {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  to {
+    width: 40px; /* Tamaño final de la onda */
+    height: 40px;
+    opacity: 0;
+  }
+}

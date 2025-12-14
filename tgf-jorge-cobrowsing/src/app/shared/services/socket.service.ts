@@ -1,6 +1,7 @@
-import { Injectable, inject, effect } from '@angular/core';
+import { Injectable, inject, effect, signal } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { AuthService } from './auth.service';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,9 @@ import { AuthService } from './auth.service';
 export class SocketService {
   private authService = inject(AuthService);
   private socket = inject(Socket);
+  
+  private connectionStatus = new Subject<'connected' | 'disconnected'>();
+  public connectionStatus$ = this.connectionStatus.asObservable();
 
   constructor() {
     effect(() => {
@@ -18,6 +22,9 @@ export class SocketService {
         this.disconnect();
       }
     });
+
+    this.socket.on('connect', () => this.connectionStatus.next('connected'));
+    this.socket.on('disconnect', () => this.connectionStatus.next('disconnected'));
   }
 
   private connect() {
@@ -27,7 +34,7 @@ export class SocketService {
         entityId: user.entityId,
         userId: user._id,
         isAgent: true,
-        appId: 'COBROWSING_APP_ID' // As defined in backend
+        appId: 'COBROWSING_APP_ID'
       };
       this.socket.connect();
     }
@@ -39,7 +46,7 @@ export class SocketService {
     }
   }
 
-  listen(eventName: string) {
+  listen(eventName: string): Observable<any> {
     return this.socket.fromEvent(eventName);
   }
 

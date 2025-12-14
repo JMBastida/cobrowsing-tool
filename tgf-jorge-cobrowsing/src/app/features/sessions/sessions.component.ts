@@ -24,11 +24,18 @@ export class SessionsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setupSocketListeners();
-    this.loadSessions();
+    
+    // Subscribe to connection status to load sessions
+    this.subscriptions.push(
+      this.socketService.connectionStatus$.subscribe(status => {
+        if (status === 'connected') {
+          this.loadSessions();
+        }
+      })
+    );
   }
 
   private setupSocketListeners() {
-    // Initial load response
     this.subscriptions.push(
       this.socketService.listen('sessions-recovered').subscribe((data: any) => {
         console.log('Sessions recovered event received:', data);
@@ -45,18 +52,15 @@ export class SessionsComponent implements OnInit, OnDestroy {
       })
     );
 
-    // New session event - Corrected to 'new-session'
     this.subscriptions.push(
       this.socketService.listen('new-session').subscribe((data: any) => {
         console.log('New session event:', data);
-        // The payload for 'new-session' is { uid, session, total }
         if (data && data.session) {
-          this.sessions.update(current => [data.session, ...current]); // Add to the top of the list
+          this.sessions.update(current => [...current, data.session]);
         }
       })
     );
 
-    // Remove session event
     this.subscriptions.push(
       this.socketService.listen('remove-session').subscribe((data: any) => {
         console.log('Remove session event:', data);
@@ -66,10 +70,8 @@ export class SessionsComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Update session event
     this.subscriptions.push(
       this.socketService.listen('update-session').subscribe((updatedSession: any) => {
-        // console.log('Update session event:', updatedSession); // Can be noisy
         if (updatedSession && updatedSession._id) {
           this.sessions.update(current => 
             current.map(s => s._id === updatedSession._id ? { ...s, ...updatedSession } : s)
@@ -80,7 +82,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
   }
 
   private loadSessions() {
-    console.log('Emitting search-sessions...');
+    console.log('Socket connected, emitting search-sessions...');
     this.socketService.emit('search-sessions', { searchString: '', skip: 0, limit: 100 });
   }
 

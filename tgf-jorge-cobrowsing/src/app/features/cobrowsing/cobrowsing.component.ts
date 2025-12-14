@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy, ViewChild, ElementRef, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy, ViewChild, ElementRef, HostListener, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -13,6 +13,8 @@ interface ClickRipple {
   y: number;
 }
 
+const COBROWSING_STATE_KEY = 'cobrowsing_session_state';
+
 @Component({
   selector: 'app-cobrowsing',
   standalone: true,
@@ -26,7 +28,6 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private socketService = inject(SocketService);
   private sanitizer = inject(DomSanitizer);
-  private cdr = inject(ChangeDetectorRef);
 
   @ViewChild('iframe') iframe: ElementRef<HTMLIFrameElement> | undefined;
   @ViewChild('screenContainer') screenContainer: ElementRef<HTMLDivElement> | undefined;
@@ -47,24 +48,75 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   private scrollValue = { x: 0, y: 0 };
   private avoidAgentEvents = true;
 
-  ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    this.sessionId.set(id);
+  constructor() {
+    effect(() => {
+      const state = {
+        sessionId: this.sessionId(),
+        isCobrowsing: this.isCobrowsing(),
+        isCobrowsingRequest: this.isCobrowsingRequest()
+      };
+      sessionStorage.setItem(COBROWSING_STATE_KEY, JSON.stringify(state));
+    });
+  }
 
-    if (id) {
-      this.setupSocketListeners(id);
-      this.socketService.emit('watch-session', { sessionId: id });
+  ngOnInit() {
+    this.subscriptions.push(
+      this.socketService.connectionStatus$.subscribe(status => {
+        if (status === 'connected') {
+          this.initializeSession();
+        }
+      })
+    );
+    this.initializeSession();
+  }
+
+  initializeSession() {
+    const savedStateString = sessionStorage.getItem(COBROWSING_STATE_KEY);
+    const routeId = this.route.snapshot.paramMap.get('id');
+    
+    let stateToRecover: { sessionId: string | null, isCobrowsing?: boolean, isCobrowsingRequest?: boolean } = { sessionId: routeId };
+
+    if (savedStateString) {
+      const savedState = JSON.parse(savedStateString);
+      if (!routeId || routeId === savedState.sessionId) {
+        stateToRecover = savedState;
+      }
+    }
+
+    if (stateToRecover.sessionId) {
+      this.sessionId.set(stateToRecover.sessionId);
+      this.isCobrowsing.set(stateToRecover.isCobrowsing || false);
+      this.isCobrowsingRequest.set(stateToRecover.isCobrowsingRequest || false);
+      
+      this.avoidAgentEvents = !(stateToRecover.isCobrowsing || false);
+      
+      this.setupSocketListeners(stateToRecover.sessionId);
+      
+      this.socketService.emit('agent-reconnection', {
+        sessionId: stateToRecover.sessionId,
+        isCobrowsing: this.isCobrowsing(),
+        isCobrowsingRequest: this.isCobrowsingRequest()
+      });
     }
   }
 
   @HostListener('window:message', ['$event']) 
   handleMessage(event: MessageEvent) {
     if (!event || !event.data || !event.data.type) return;
-    if (this.avoidAgentEvents || !this.isCobrowsing()) return;
+    
+    if (this.avoidAgentEvents || !this.isCobrowsing()) {
+      // console.log('Agent event blocked', { avoid: this.avoidAgentEvents, cobrowsing: this.isCobrowsing() });
+      return;
+    }
+    
+    console.log('AGENT: Forwarding event to server:', event.data);
     this.socketService.emit('new-agent-event', event.data);
   }
 
   private setupSocketListeners(sessionId: string) {
+    if (this.subscriptions.length > 1) { 
+      return;
+    }
     this.subscriptions.push(
       this.socketService.listen('update-dom').subscribe((data: any) => this.handleUpdateDom(data)),
       this.socketService.listen('dom-mutations').subscribe((data: any) => this.handleDomMutations(data)),
@@ -72,7 +124,6 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
       this.socketService.listen('resize').subscribe((data: any) => this.handleRemoteResize(data)),
       this.socketService.listen('session-not-found').subscribe(() => this.router.navigate(['/dashboard/sessions'])),
       
-      // Co-browsing flow events
       this.socketService.listen('co-browsing-response').subscribe((data: { isAccepted: boolean }) => {
         this.isCobrowsingRequest.set(false);
         if (data.isAccepted) {
@@ -135,8 +186,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
 
     if (addedElements) {
         addedElements.forEach((element: any) => {
-            // @ts-ignore
-            const placeholder = this.iframe.nativeElement.contentWindow!.document.createElement('div');
+            const placeholder = this.iframe!.nativeElement.contentWindow!.document.createElement('div');
             placeholder.innerHTML = element.html;
             const node = placeholder.firstElementChild;
             if (node) {
@@ -170,7 +220,6 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
     }
     
     if (newOuterHtml) {
-        // @ts-ignore
         const placeholder = this.iframe.nativeElement.contentWindow!.document.createElement('div');
         placeholder.innerHTML = newOuterHtml;
         const node = placeholder.firstElementChild;
@@ -216,7 +265,6 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
             this.iframe.nativeElement.contentWindow.scrollTo({ top: scrollY, left: scrollX, behavior: 'auto' });
         }
 
-        // @ts-ignore
         this.iframe.nativeElement.contentWindow.postMessage(data, '*');
         
         setTimeout(() => {
@@ -319,6 +367,8 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
           this.iframe.nativeElement.contentWindow.scrollTo(this.scrollValue.x, this.scrollValue.y);
       }
       
+      this.handlePointerEvents(this.isCobrowsing());
+      
     } catch (e) {
       console.error("Could not access iframe content.", e);
     }
@@ -346,14 +396,15 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   private getElementFromSelector(selector: string, iframeSelector?: string): any {
     let element;
     try {
-      // @ts-ignore
-        const doc = this.iframe.nativeElement.contentWindow!.document;
-      if (iframeSelector) {
-        const iframe: HTMLIFrameElement | null = doc.querySelector(iframeSelector);
-        element = iframe?.contentWindow?.document.querySelector(selector);
-      } else {
-        element = doc.querySelector(selector);
-      }
+        if (!this.iframe?.nativeElement?.contentWindow) return undefined;
+        
+        const doc = this.iframe.nativeElement.contentWindow.document;
+        if (iframeSelector) {
+            const iframe: HTMLIFrameElement | null = doc.querySelector(iframeSelector);
+            element = iframe?.contentWindow?.document.querySelector(selector);
+        } else {
+            element = doc.querySelector(selector);
+        }
     } catch (error) {
       element = undefined;
     }
@@ -422,6 +473,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
             }
           } else if (event.data.type === "AVOID_EVENTS") {
              avoidAgentEvents = event.data.data.value;
+             console.log("IFRAME: avoidAgentEvents set to", avoidAgentEvents);
           }
         });
 
@@ -445,7 +497,11 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
         window.addEventListener("scroll", scrollHandler, true);
 
         window.addEventListener("click", (event) => {
-          if (avoidAgentEvents) return;
+          if (avoidAgentEvents) {
+             console.log("IFRAME: Click blocked by avoidAgentEvents");
+             return;
+          }
+          console.log("IFRAME: Click detected, sending to parent");
           var path = getSelector(event.target);
           var clickEvent = {
             type: 'CLICK',
@@ -472,8 +528,11 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
     if (!this.iframe?.nativeElement?.contentWindow) return;
     this.iframe.nativeElement.contentWindow.postMessage(data, '*');
     
-    if (isAllowed) this.iframe.nativeElement.style.pointerEvents = 'unset';
-    else this.iframe.nativeElement.style.pointerEvents = 'none';
+    if (isAllowed) {
+        this.iframe.nativeElement.style.pointerEvents = 'auto';
+    } else {
+        this.iframe.nativeElement.style.pointerEvents = 'none';
+    }
   }
 
   requestCoBrowsing() {
