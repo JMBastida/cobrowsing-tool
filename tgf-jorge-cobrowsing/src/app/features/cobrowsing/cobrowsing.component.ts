@@ -225,23 +225,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
         this.handlePointerEvents(false);
         this.scrollValue = data.data.value;
         
-        // Apply scroll to the correct element
-        const selector = data.data.selector;
-        const scrollX = data.data.value.x || 0;
-        const scrollY = data.data.value.y || 0;
-
-        if (selector) {
-            const element = this.getElementFromSelector(selector);
-            if (element) {
-                element.scrollTo({ top: scrollY, left: scrollX, behavior: 'auto' }); // Use auto for instant sync
-            }
-        } else {
-            // Global scroll
-            this.iframe.nativeElement.contentWindow.scrollTo({ top: scrollY, left: scrollX, behavior: 'auto' });
-        }
-
-        // Also post message to iframe script if needed for internal logic
-        // @ts-ignore
+        // Forward the event to the iframe's internal script
         this.iframe.nativeElement.contentWindow.postMessage(data, '*');
         
         setTimeout(() => {
@@ -385,8 +369,54 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   }
 
   private getExtraStyles() {
+    // Inject a standard CSS reset to normalize styles and fix margin issues.
     return `
       <style>
+        /* A simple but effective CSS Reset */
+        html, body, div, span, applet, object, iframe,
+        h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+        a, abbr, acronym, address, big, cite, code,
+        del, dfn, em, img, ins, kbd, q, s, samp,
+        small, strike, strong, sub, sup, tt, var,
+        b, u, i, center,
+        dl, dt, dd, ol, ul, li,
+        fieldset, form, label, legend,
+        table, caption, tbody, tfoot, thead, tr, th, td,
+        article, aside, canvas, details, embed, 
+        figure, figcaption, footer, header, hgroup, 
+        menu, nav, output, ruby, section, summary,
+        time, mark, audio, video {
+          margin: 0;
+          padding: 0;
+          border: 0;
+          font-size: 100%;
+          font: inherit;
+          vertical-align: baseline;
+        }
+        /* HTML5 display-role reset for older browsers */
+        article, aside, details, figcaption, figure, 
+        footer, header, hgroup, menu, nav, section {
+          display: block;
+        }
+        body {
+          line-height: 1;
+        }
+        ol, ul {
+          list-style: none;
+        }
+        blockquote, q {
+          quotes: none;
+        }
+        blockquote:before, blockquote:after,
+        q:before, q:after {
+          content: '';
+          content: none;
+        }
+        table {
+          border-collapse: collapse;
+          border-spacing: 0;
+        }
+        /* Custom scrollbar styles */
         html::-webkit-scrollbar { display: none; }
         html { -ms-overflow-style: none; scrollbar-width: none; }
       </style>
@@ -398,19 +428,71 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
     return `
       <script>
         var avoidAgentEvents = ${this.avoidAgentEvents};
-        
+        var ticking = false;
+
         function getSelector(node) {
-          if (!node) return null;
+          if (!node || !node.localName) return 'window';
+          if (node.localName === 'html') return 'html';
+          if (node.localName === 'body') return 'body';
+
           var id = node.getAttribute('id');
           if (id) return '#' + id;
+          
           var path = node.localName;
           var parent = node.parentNode;
-          while (parent && parent.localName) {
+          while (parent && parent.localName && parent.localName !== 'html') {
              path = parent.localName + ' > ' + path;
              parent = parent.parentNode;
           }
           return path;
         }
+
+        // Listen for messages from the parent window (the Angular app)
+        window.addEventListener("message", (event) => {
+          if (!event || !event.data || !event.data.type) return;
+          
+          if (event.data.type === "SCROLL") {
+            console.log("IFRAME: Received SCROLL event", event.data.data);
+            var selector = event.data.data.selector;
+            var value = event.data.data.value;
+            var element;
+
+            if (selector === 'html' || selector === 'window' || selector === 'body') {
+              console.log("IFRAME: Scrolling window/html/body to", value.x, value.y);
+              // Try scrolling everything to be sure
+              window.scrollTo({ top: value.y, left: value.x, behavior: 'auto' });
+              if (document.documentElement) document.documentElement.scrollTop = value.y;
+              if (document.body) document.body.scrollTop = value.y;
+            } else {
+              element = document.querySelector(selector);
+              if (element) {
+                console.log("IFRAME: Scrolling element", selector, "to", value.x, value.y);
+                element.scrollTo({ top: value.y, left: value.x, behavior: 'auto' });
+              } else {
+                console.warn("IFRAME: Element not found for selector", selector);
+              }
+            }
+          }
+        });
+
+        function scrollHandler(event) {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(function() {
+            var target = event.target === document ? document.documentElement : event.target;
+            var scrollEvent = {
+              type: "SCROLL",
+              data: {
+                selector: getSelector(target),
+                value: { x: target.scrollLeft || window.scrollX, y: target.scrollTop || window.scrollY }
+              },
+            };
+            window.parent.postMessage(scrollEvent, '*');
+            ticking = false;
+          });
+        }
+
+        window.addEventListener("scroll", scrollHandler, true);
 
         window.addEventListener("click", (event) => {
           if (avoidAgentEvents) return;

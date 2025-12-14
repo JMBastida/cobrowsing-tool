@@ -1,26 +1,22 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { USER_ROLES } from '../enums/user.enums';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
   private baseUrl = `${environment.BASE_API_URL}/api`;
 
-  user = signal<any>(null);
+  // Get the user signal directly from the AuthService
+  user = this.authService.user;
 
   constructor() {
-    this.getSelfUser().subscribe();
-  }
-
-  getSelfUser(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/users/self`).pipe(
-      tap(user => this.user.set(user))
-    );
+    // No longer needs to fetch the user on startup
   }
 
   getUsers(): Observable<any> {
@@ -32,9 +28,7 @@ export class UsersService {
   }
 
   updateSelfUser(user: any): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/users/self`, user).pipe(
-      tap(updatedUser => this.user.set(updatedUser))
-    );
+    return this.http.patch(`${this.baseUrl}/users/self`, user);
   }
 
   updateUser(user: any): Observable<any> {

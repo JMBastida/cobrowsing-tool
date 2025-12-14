@@ -45,12 +45,13 @@ export class SessionsComponent implements OnInit, OnDestroy {
       })
     );
 
-    // New session event
+    // New session event - Corrected to 'new-session'
     this.subscriptions.push(
       this.socketService.listen('new-session').subscribe((data: any) => {
         console.log('New session event:', data);
+        // The payload for 'new-session' is { uid, session, total }
         if (data && data.session) {
-          this.sessions.update(current => [...current, data.session]);
+          this.sessions.update(current => [data.session, ...current]); // Add to the top of the list
         }
       })
     );

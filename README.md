@@ -17,7 +17,7 @@ Password: password123
 
 ## Project Structure
 
-*   `/nectar`: Node.js backend API and WebSocket server.
+*   `/nectar`: Our main data management place with a Node.js API and WebSocket server.
 *   `/tgf-jorge-cobrowsing`: Angular frontend dashboard for agents.
 
 ## Setup & Running(No docker way)
