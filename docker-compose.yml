@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  nectar:
+    build:
+      context: ./nectar
+      dockerfile: Dockerfile
+    container_name: nectar-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    networks:
+      - cobrowsing-net
+
+  angular-frontend:
+    build:
+      context: ./tgf-jorge-cobrowsing
+      dockerfile: Dockerfile
+    container_name: angular-frontend
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      - nectar
+    networks:
+      - cobrowsing-net
+
+networks:
+  cobrowsing-net:
+    driver: bridge

@@ -46,7 +46,8 @@ database.connect().then(() => {
   app.use('/p', libRoutes);
   app.get(/.*/, (req, res) => res.status(404).send());
   server = http.createServer(app);
-  server.listen(CONFIG.PORT, 'localhost', () => {
+  // Listen on 0.0.0.0 to accept connections from other containers
+  server.listen(CONFIG.PORT, '0.0.0.0', () => {
     logger.info(`Node server listening on http://localhost:${CONFIG.PORT}`);
   });
   io = SocketIo(
