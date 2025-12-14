@@ -8,24 +8,24 @@
         sandbox="allow-same-origin allow-scripts allow-forms allow-presentation"
         (load)="onLoadIframe()">
       </iframe>
-      
-      <!-- Client Cursor -->
-      @if (clientCursor()) {
-        <div 
-          class="client-cursor" 
-          [style.left.px]="clientCursor()?.x" 
-          [style.top.px]="clientCursor()?.y">
-          <div class="cursor-icon">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 0L8.5 18.5L10.5 10.5L18.5 8.5L0 0Z" fill="#FF0000" stroke="white"/>
-            </svg>
-          </div>
-          <div class="cursor-name">Client</div>
-        </div>
-      }
     } @else {
       <div class="loading-container">
         <p>Connecting to session...</p>
+      </div>
+    }
+
+    <!-- Client Cursor, posicionado relativo a screen-container -->
+    @if (clientCursor()) {
+      <div 
+        class="client-cursor" 
+        [style.left.px]="clientCursor()?.x" 
+        [style.top.px]="clientCursor()?.y">
+        <div class="cursor-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0L8.5 18.5L10.5 10.5L18.5 8.5L0 0Z" fill="#FF0000" stroke="white"/>
+          </svg>
+        </div>
+        <div class="cursor-name">Client</div>
       </div>
     }
   </div>

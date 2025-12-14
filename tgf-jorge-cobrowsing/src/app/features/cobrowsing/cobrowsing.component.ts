@@ -42,6 +42,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
 
     if (id) {
       this.setupSocketListeners(id);
+      console.log('Emitting watch-session for:', id);
       this.socketService.emit('watch-session', { sessionId: id });
     }
   }
@@ -66,14 +67,23 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
     // Update DOM (Initial Load)
     this.subscriptions.push(
       this.socketService.listen('update-dom').subscribe((data: any) => {
+        console.log('Received update-dom:', data);
         if (!data) return;
         this.tempDomData.push(data);
         const last = this.tempDomData.find(d => d.isLast);
-        if (!last) return;
         
+        if (!last) {
+            console.log('Waiting for last DOM packet...');
+            return;
+        }
+        
+        console.log('Last DOM packet received. Assembling DOM...');
         const { timeStamp } = last;
         const validData = this.tempDomData.filter(d => d.timeStamp === timeStamp);
-        if (last.order >= validData.length) return;
+        if (last.order >= validData.length) {
+             console.log('Missing packets. Expected:', last.order + 1, 'Received:', validData.length);
+             return;
+        }
         
         validData.sort((a, b) => a.order - b.order);
         const tempData = validData.reduce((prev, curr) => {
@@ -83,6 +93,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
         }, { html: '', shadowString: '' });
         
         const { html, shadowString } = tempData;
+        console.log('DOM assembled. Parsing HTML...');
         const htmlParsed = this.parseHtml(html);
         
         if (shadowString) {
@@ -97,6 +108,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
         // The content will be loaded via [src] binding.
         const blob = new Blob([htmlParsed], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
+        console.log('Setting iframeSrc...');
         this.iframeSrc.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
         
         this.tempDomData = this.tempDomData.filter(d => d.timeStamp !== timeStamp);
@@ -106,6 +118,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
     // DOM Mutations
     this.subscriptions.push(
       this.socketService.listen('dom-mutations').subscribe((data: any) => {
+        // console.log('Received dom-mutations'); // Can be noisy
         this.handleDomMutations(data);
       })
     );
@@ -113,6 +126,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
     // Client Events (Mouse, Scroll, Click, Input)
     this.subscriptions.push(
       this.socketService.listen('client-event').subscribe((data: any) => {
+        // console.log('Received client-event', data.type);
         this.handleClientEvent(data);
       })
     );
@@ -127,6 +141,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
     // Session Not Found
     this.subscriptions.push(
       this.socketService.listen('session-not-found').subscribe(() => {
+        console.warn('Session not found');
         this.router.navigate(['/dashboard/sessions']);
       })
     );
@@ -141,8 +156,10 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
     if (!parentNode) return;
 
     if (addedElements) {
+        // Logic for added elements (simplified from reference)
         addedElements.forEach((element: any) => {
-            const placeholder = this.iframe!.nativeElement.contentWindow!.document.createElement('div');
+            // @ts-ignore
+            const placeholder = this.iframe.nativeElement.contentWindow!.document.createElement('div');
             placeholder.innerHTML = element.html;
             const node = placeholder.firstElementChild;
             if (node) {
@@ -201,13 +218,30 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   private handleClientEvent(data: any) {
     if (!data || !data.type || !data.data) return;
 
-    // Check if iframe is ready before processing events that require it
     if (data.type === 'SCROLL') {
         if (!this.iframe?.nativeElement?.contentWindow) return;
 
         this.scrollOrder = Date.now();
         this.handlePointerEvents(false);
         this.scrollValue = data.data.value;
+        
+        // Apply scroll to the correct element
+        const selector = data.data.selector;
+        const scrollX = data.data.value.x || 0;
+        const scrollY = data.data.value.y || 0;
+
+        if (selector) {
+            const element = this.getElementFromSelector(selector);
+            if (element) {
+                element.scrollTo({ top: scrollY, left: scrollX, behavior: 'auto' }); // Use auto for instant sync
+            }
+        } else {
+            // Global scroll
+            this.iframe.nativeElement.contentWindow.scrollTo({ top: scrollY, left: scrollX, behavior: 'auto' });
+        }
+
+        // Also post message to iframe script if needed for internal logic
+        // @ts-ignore
         this.iframe.nativeElement.contentWindow.postMessage(data, '*');
         
         setTimeout(() => {
@@ -218,7 +252,6 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
         let left = data.data.left;
         let top = data.data.top;
         
-        // Only try to access iframe if we need to calculate offset based on an iframe selector
         if (data.data.iframeSelector && this.iframe?.nativeElement?.contentWindow) {
              const iframe = this.getElementFromSelector(data.data.iframeSelector);
              if (iframe) {
@@ -227,6 +260,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
                  top += position.top;
              }
         }
+        
         this.clientCursor.set({ x: this.scale() * left, y: this.scale() * top });
     } else if (data.type === 'CLICK') {
         if (data.data.selector && this.iframe?.nativeElement?.contentWindow) {
@@ -292,6 +326,12 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
           input.value = value;
         }
       });
+      
+      // Apply initial scroll if available
+      if (this.scrollValue.x || this.scrollValue.y) {
+          this.iframe.nativeElement.contentWindow.scrollTo(this.scrollValue.x, this.scrollValue.y);
+      }
+      
     } catch (e) {
       console.error("Could not access iframe content.", e);
     }
@@ -319,16 +359,16 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   private getElementFromSelector(selector: string, iframeSelector?: string): any {
     let element;
     try {
-        if (!this.iframe?.nativeElement?.contentWindow) return undefined;
-        
-        const doc = this.iframe.nativeElement.contentWindow.document;
-        if (iframeSelector) {
-            const iframe: HTMLIFrameElement | null = doc.querySelector(iframeSelector);
-            element = iframe?.contentWindow?.document.querySelector(selector);
-        } else {
-            element = doc.querySelector(selector);
-        }
+      // @ts-ignore
+        const doc = this.iframe.nativeElement.contentWindow!.document;
+      if (iframeSelector) {
+        const iframe: HTMLIFrameElement | null = doc.querySelector(iframeSelector);
+        element = iframe?.contentWindow?.document.querySelector(selector);
+      } else {
+        element = doc.querySelector(selector);
+      }
     } catch (error) {
+      // console.log('wrong selector:', selector);
       element = undefined;
     }
     return element;
@@ -354,6 +394,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   }
 
   private getIframeListeners() {
+    // Injects the script that listens to events inside the iframe and posts them to parent
     return `
       <script>
         var avoidAgentEvents = ${this.avoidAgentEvents};
