@@ -78,14 +78,18 @@ Password: password123
 ### 3. Testing the Client Script
 There are two ways, using your own website with script embedded or just go to any site and paste this script on console:
 
-Easy way:
+Easy way for testing purposes we need to insert in console TWO TIMES the script due to non controlled init by doing this way:
 ```js
 function e(){var e=a.createElement("script");e.async=!0,e.type="text/javascript",e.src="http://localhost:3001/p/cd90b9a81dea05dd561c5d79";var t=a.getElementsByTagName("script")[0];t&&t.parentNode?t.parentNode.insertBefore(e,t):a.head.appendChild(e)}var a,t;"undefined"==typeof Sideby&&(Sideby={}),a=document,t=window,"complete"===a.readyState?e():t.addEventListener("load",e,!1);
 ```
-Go to console and paste the code:
+Go to console and paste the code 2 times:
 ![img.png](img.png)
 and with the front open in split screen you can do a test:
 ![img_1.png](img_1.png)
+
+Fast video tutorial:
+
+
 Another option:
 
 To simulate a client website:

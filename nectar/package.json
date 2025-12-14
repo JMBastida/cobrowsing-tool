@@ -24,6 +24,7 @@
     "multer": "2.0.2",
     "node-mailjet": "^3.3.4",
     "nodemailer": "7.0.11",
+    "saslprep": "^1.0.3",
     "socket.io": "4.6.2",
     "socket.io-client": "^4.0.1",
     "uglify-js": "^3.14.1"

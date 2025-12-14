@@ -874,26 +874,30 @@ function handleShowCoBrowsingAdvise() {
 }
 
 function handleShowRequestAdvise(user) {
-  if (!user || !user._id) {
-    setState(sessionId, isCobrowsing, false);
-    return;
-  }
+    if (!user || !user._id) {
+        setState(sessionId, isCobrowsing, false);
+        return;
+    }
 
-  requestingUser = user;
-  hideElement('shr-smart-link-advise');
-  hideElement('shr-agent-busy-advise');
-  var existingPermissionAdvise = showElement('shr-permission-advise', 'block');
-  if (!existingPermissionAdvise) {
-    var permissionAdvise = document.createElement('div');
-    permissionAdvise.id = 'shr-permission-advise';
-    var innerHtml = getPermissionAdviceContent(user.name, lan);
-    permissionAdvise.innerHTML = innerHtml;
-    document.body.appendChild(permissionAdvise);
-  }
+    requestingUser = user;
 
-  setState(sessionId, isCobrowsing, true);
+    // --- AÑADIR ESTA LÍNEA (Backup de seguridad) ---
+    sessionStorage.setItem('sb_requesting_user', JSON.stringify(user));
+    // -----------------------------------------------
+
+    hideElement('shr-smart-link-advise');
+    hideElement('shr-agent-busy-advise');
+    var existingPermissionAdvise = showElement('shr-permission-advise', 'block');
+    if (!existingPermissionAdvise) {
+        var permissionAdvise = document.createElement('div');
+        permissionAdvise.id = 'shr-permission-advise';
+        var innerHtml = getPermissionAdviceContent(user.name, lan);
+        permissionAdvise.innerHTML = innerHtml;
+        document.body.appendChild(permissionAdvise);
+    }
+
+    setState(sessionId, isCobrowsing, true);
 }
-
 function startCoBrowsing() {
   hideElement('shr-help-bubble-button');
   hideElement('shr-co-browsing-end-advise');
@@ -908,9 +912,26 @@ function startCoBrowsing() {
 function responseCoBrowsing(isAccepted) {
   hideElement('shr-permission-advise');
   setState(sessionId, isCobrowsing, false);
+    // Si la variable requestingUser murió, intentamos revivirla desde el backup
+    if (!requestingUser) {
+        try {
+            var backupUser = sessionStorage.getItem('sb_requesting_user');
+            if (backupUser) {
+                requestingUser = JSON.parse(backupUser);
+            }
+        } catch (e) {
+            console.log('Error recuperando usuario backup', e);
+        }
+    }
+    // Check de seguridad por si acaso
+    if (!requestingUser || !requestingUser._id) {
+        console.error("No hay usuario solicitante");
+        return;
+    }
   if (!socket) return;
   var data = { userId: requestingUser._id, isAccepted };
   socket.emit('client-co-browsing-response', data);
+    sessionStorage.removeItem('sb_requesting_user');
   if (isAccepted) {
     startCoBrowsing();
     addCursor(requestingUser);
@@ -1290,8 +1311,11 @@ function initializeSocket() {
     handleCoBrowsingEndAdvise();
   });
   socket.on('agent-co-browsing-request', function (data) {
-    handleShowRequestAdvise(data);
+        // GUARDAMOS EN STORAGE PARA QUE SOBREVIVA A UN REFRESH
+        sessionStorage.setItem('sbRequestingUser', JSON.stringify(data));
+        handleShowRequestAdvise(data);
   });
+
   socket.on('agent-left', function (data) {
     if (!data || !data.userId) return;
     removeCursor(data.userId);
@@ -1368,6 +1392,12 @@ function includeStyles() {
 function recoverState() {
   uid = localStorage.getItem(UID_KEY);
   var stateString = sessionStorage.getItem(STATE_KEY);
+  var requestingUserString = sessionStorage.getItem('sbRequestingUser');
+  if (requestingUserString) {
+      try {
+          requestingUser = JSON.parse(requestingUserString);
+      } catch(e) {}
+  }
   if (!stateString) return;
   var state = JSON.parse(stateString);
   if (!state || !state.sessionId) {

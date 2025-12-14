@@ -1,7 +1,8 @@
 import { Injectable, inject, effect, signal } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { AuthService } from './auth.service';
-import { Observable, Subject } from 'rxjs';
+// @ts-ignore
+import {Observable, Subject} from "rxjs";
 
 @Injectable({
   providedIn: 'root'

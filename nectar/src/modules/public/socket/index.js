@@ -181,7 +181,7 @@ function notifyNewConnectionToObservers(entityId, session, uid) {
   const searchResult = searchSessions(entityId, null, {}, '');
   let { total } = searchResult;
   total += 1;
-  for (let i = 0; i < totalObservers; i += 1) {
+for (let i = 0; i < totalObservers; i += 1) {
     const observerSocketData = observersSocketsData[i];
     if (clientsSocketsData && clientsSocketsData.length >= MAX_SESSIONS && session._id.toString() !== observerSocketData.sessionId) {
       continue;
@@ -291,6 +291,7 @@ function getSmartLinkSession(entityId, code) {
 }
 
 function checkSpecialSession(session, user, sessionId) {
+    if (!session || !session._id) return false;
   if (
     (sessionId && session._id.toString() === sessionId.toString()) ||
     session.isHelpRequest ||
@@ -501,9 +502,10 @@ async function setEndCobrowsingInfoFromSessionId(entityId, sessionId) {
 }
 
 async function updateSessionLocation(entityId, session, location) {
-  if (!entityId || !session || !location) return session;
-  let sessionUpdated = session;
-  const locations = session.locations || [];
+   if (!entityId || !session || !session._id || !location) return session;
+
+   let sessionUpdated = session;
+   const locations = session.locations || [];
   if (!locations || !locations.length) {
     const sessionParsed = { _id: session._id, locations: [location] };
     sessionUpdated = await sessionBll.updateOne(entityId, sessionParsed);
@@ -584,6 +586,13 @@ async function handleNewSocket(socket, forceConnection) {
   let location = socket.handshake.query.location || '';
   const isAgent = socket.handshake.query.isAgent === 'true';
   const ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address.address;
+
+    // --- LOGS DE DEBUG ---
+    console.log('--- NEW SOCKET DEBUG ---');
+    console.log('Socket ID:', socket.id);
+    console.log('Query EntityId:', entityId);
+    console.log('Query IsAgent:', socket.handshake.query.isAgent);
+    // ---------------------
   location = parseLocation(location);
   handleEntityScriptLocation(entityId, location);
   let session;
@@ -633,9 +642,18 @@ async function handleNewSocket(socket, forceConnection) {
 
       if (!session) {
         session = await createSession(entityId, ip);
+          if (!session || !session._id) {
+              console.error("CRITICAL: Failed to create session in DB. Disconnecting socket.");
+              socket.disconnect();
+              return;
+          }
         sessionId = session._id;
         socket.emit('session-created', session);
       }
+
+      session = await updateSessionLocation(entityId, session, location);
+      session.isInTab = true;
+      notifyNewConnectionToObservers(entityId, session, uid);
 
       session = await updateSessionLocation(entityId, session, location);
       session.isInTab = true;
