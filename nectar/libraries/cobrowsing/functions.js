@@ -1249,6 +1249,9 @@ function setUid(id) {
 
 function initializeSocket() {
   if (socket) return;
+    if (!uid) {
+        uid = localStorage.getItem(UID_KEY);
+    }
   var options = {
     path: '/ws/',
     forceNew: true,

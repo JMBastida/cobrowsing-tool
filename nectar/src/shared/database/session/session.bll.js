@@ -43,18 +43,28 @@ async function insertOne(entityId, session) {
 }
 
 async function updateOne(entityId, session) {
-  await validateUpdateSession(entityId, session._id);
-  const sessionParsed = { ...session, modificationDate: new Date() };
-  // Ensure _id is not in the $set update payload if it's there, though updateOne usually handles filter separately
-  const { _id, ...updateData } = sessionParsed;
-  
-  // We need to pass the full object to repository updateOne as it expects 'session'
-  // But repository implementation does: const filter = { _id: session._id }; const update = { $set: session };
-  // So we should pass the object with _id.
-  const sessionToUpdate = { ...sessionParsed, _id: new ObjectId(session._id) };
-  
-  const sessionUpdated = await sessionRepository.updateOne(sessionToUpdate);
-  return sessionUpdated;
+    await validateUpdateSession(entityId, session._id);
+
+    const { _id, ...dataToUpdate } = session;
+
+    const sessionParsed = {
+        ...dataToUpdate,
+        modificationDate: new Date()
+    };
+
+    // Objeto completo con ID para que el repositorio sepa buscar
+    const sessionToUpdate = {
+        ...sessionParsed,
+        _id: new ObjectId(_id)
+    };
+
+    // --- CAMBIO AQUÍ ---
+    // Ejecutamos la actualización, pero NO devolvemos su resultado (que es {acknowledged: true...})
+    await sessionRepository.updateOne(sessionToUpdate);
+
+    // Devolvemos el objeto de sesión COMPLETO (con su _id original)
+    // para que el socket mantenga los datos correctos en memoria.
+    return sessionToUpdate;
 }
 
 async function addMessages(entityId, session) {

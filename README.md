@@ -82,13 +82,13 @@ Easy way for testing purposes we need to insert in console TWO TIMES the script 
 ```js
 function e(){var e=a.createElement("script");e.async=!0,e.type="text/javascript",e.src="http://localhost:3001/p/cd90b9a81dea05dd561c5d79";var t=a.getElementsByTagName("script")[0];t&&t.parentNode?t.parentNode.insertBefore(e,t):a.head.appendChild(e)}var a,t;"undefined"==typeof Sideby&&(Sideby={}),a=document,t=window,"complete"===a.readyState?e():t.addEventListener("load",e,!1);
 ```
-Go to console and paste the code 2 times:
+Go to console and paste the code:
 ![img.png](img.png)
 and with the front open in split screen you can do a test:
 ![img_1.png](img_1.png)
 
 Fast video tutorial:
-
+[tutorial-version-1-entregable-3.mp4](tutorial-version-1-entregable-3.mp4)
 
 Another option:
 
@@ -106,12 +106,11 @@ To simulate a client website:
 ## Troubleshooting
 
 *   **No sessions appear:**
-    *   Check the browser console on the client page for errors (404 on script load, CORS issues).
-    *   Check the `nectar` server console for logs indicating a connection (`[lib.bll] Received request...`).
-    *   Ensure the `entityId` in the database matches the one the script is trying to use.
-*   **Cursor not moving:**
-    *   Ensure the `CobrowsingComponent` is receiving `client-event` messages via the WebSocket.
-    *   Check that the iframe is loading correctly.
+    *   refresh window
+*   **More than two sessions appear:**
+    *   Is a bug, choose the bottom one
+*   **If nothing works try this**
+    *   Go to client website(where you include the script) adn remove storage from devtools application. and reload windows then insert script again
 
 ## License
 

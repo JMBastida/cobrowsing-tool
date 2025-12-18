@@ -1,10 +1,13 @@
-import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy, ViewChild, ElementRef, HostListener, ChangeDetectorRef, effect } from '@angular/core';
+import
+{ Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy, ViewChild, ElementRef, HostListener, ChangeDetectorRef, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+// @ts-ignore
 import { Subscription } from 'rxjs';
 import { SocketService } from '../../shared/services/socket.service';
 import LZString from 'lz-string';
+// @ts-ignore
 import { ButtonModule } from 'primeng/button';
 
 interface ClickRipple {
@@ -145,12 +148,12 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   private handleUpdateDom(data: any) {
     if (!data) return;
     this.tempDomData.push(data);
-    const last = this.tempDomData.find(d => d.isLast);
-    if (!last) return;
+    const last = this.tempDomData.filter(d => d.isLast);
+    if (!last.length) return;
     
-    const { timeStamp } = last;
+    const { timeStamp } = last[0];
     const validData = this.tempDomData.filter(d => d.timeStamp === timeStamp);
-    if (last.order >= validData.length) return;
+    if (last[0].order >= validData.length) return;
     
     validData.sort((a, b) => a.order - b.order);
     const tempData = validData.reduce((prev, curr) => {
@@ -300,7 +303,8 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
         
         const element = this.getElementFromSelector(data.data.selector, data.data.iframeSelector);
         if (element) {
-             if (['checkbox', 'radio'].includes(element.type)) {
+             // @ts-ignore
+            if (['checkbox', 'radio'].includes(element.type)) {
                  element.checked = data.data.checked;
              } else {
                  element.value = data.data.value;
@@ -310,7 +314,7 @@ export class CobrowsingComponent implements OnInit, OnDestroy {
   }
 
   private createClickRipple(x: number, y: number) {
-    const newRipple: ClickRipple = {
+      const newRipple: ClickRipple = {
       id: Date.now(),
       x: this.scale() * x,
       y: this.scale() * y

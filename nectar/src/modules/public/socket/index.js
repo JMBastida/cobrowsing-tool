@@ -633,6 +633,25 @@ async function handleNewSocket(socket, forceConnection) {
         socket.emit('force-disconnection', {});
         return;
       }
+        // Buscamos si ya hay un socket con este mismo UID (mismo navegador/cliente)
+        const existingSocketIndex = sockets.findIndex(s => s.uid === uid && !s.isAgent);
+
+        if (existingSocketIndex !== -1) {
+            const oldSocketData = sockets[existingSocketIndex];
+
+            // 1. Avisamos a los agentes que borren la visualización de la sesión vieja
+            notifyRemoveConnectionToObservers(entityId, oldSocketData.session);
+
+            // 2. Desconectamos el socket viejo si sigue vivo
+            if (oldSocketData.socket) {
+                oldSocketData.socket.disconnect(true);
+            }
+
+            // 3. Lo borramos del array de memoria
+            sockets.splice(existingSocketIndex, 1);
+
+            console.log(`[Cleaner] Eliminada sesión duplicada para UID: ${uid}`);
+        }
 
       if (sessionId) {
         const sessionsResponse = await sessionBll.find(entityId, { _id: sessionId });
@@ -665,6 +684,12 @@ async function handleNewSocket(socket, forceConnection) {
         const smartLinkSession = getSmartLinkSession(entityId, user.code);
         if (smartLinkSession) socket.emit('smart-link-connection', { sessionId: smartLinkSession._id });
       }
+        // En cuanto el agente se conecta, le enviamos todo lo que hay.
+        // Así no depende de que el Angular pida los datos.
+        setTimeout(() => {
+            const searchResult = searchSessions(entityId, user, {}, '');
+            socket.emit('sessions-recovered', searchResult);
+        }, 500); // Pequeño delay para asegurar que el cliente Angular está escuchando
     }
   }
 
@@ -737,6 +762,7 @@ function init(io) {
       if (isCobrowsing || isCobrowsingRequest) socketData.socket.emit('set-session-connected', { sessionId });
       const clientSocketData = getClientSocketDataBySessionId(entityId, sessionId);
       if (!clientSocketData) return;
+        clientSocketData.socket.emit('start-emitting', {});
       clientSocketData.socket.emit('dom-request', {});
     });
 
